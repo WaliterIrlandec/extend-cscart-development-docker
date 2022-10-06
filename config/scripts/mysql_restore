@@ -1,0 +1,106 @@
+#!/bin/bash
+
+MyUSER="root"
+MyPASS="root"
+MyHOST="localhost"
+MyDB="cscart"
+
+FILE=""
+CHECK=""
+
+MYSQL="$(which mysql)"
+
+while [ -n "$1" ]
+do
+case "$1" in
+--root_pass) MyPASS="$2"
+shift ;;
+--remote_host) MyHOST="$2"
+shift ;;
+--db_name) MyDB="$2"
+shift ;;
+--file_name) FILE="$2"
+shift ;;
+--additional_check) CHECK="$2"
+shift ;;
+*) echo "$1 is not an option";;
+esac
+shift
+done
+
+# check exist DB
+if [[ $CHECK ]];
+then
+  exist="$($MYSQL -u $MyUSER -h $MyHOST -p$MyPASS -Bse 'SHOW DATABASES' | grep $MyDB)"
+
+  if [[ -z $exist ]];
+  then
+    $($MYSQL -u $MyUSER -h $MyHOST -p$MyPASS -Bse "CREATE DATABASE $MyDB")
+
+    echo "DB created"
+  else
+    echo "DB exists"
+  fi
+fi
+# /check exist DB
+
+if [[ ${FILE} ]];
+then
+  echo "Restore file: $(pwd)/bck/$FILE"
+
+  if [ -f $(pwd)/bck/$FILE ]
+  then
+    case $FILE in
+      *".gz")
+        gunzip < $(pwd)/bck/$FILE | $MYSQL -u $MyUSER -h $MyHOST -p$MyPASS $MyDB
+        ;;
+      *".zip")
+        unzip -p $(pwd)/bck/$FILE | $MYSQL -u $MyUSER -h $MyHOST -p$MyPASS $MyDB
+        ;;
+      *)
+        # $MYSQL -u $MyUSER -h $MyHOST -p$MyPASS $MyDB < $(pwd)/bck/$FILE
+
+        # PV is utility to display progress
+        pv $(pwd)/bck/$FILE | $MYSQL -u $MyUSER -h $MyHOST -p$MyPASS $MyDB
+        ;;
+    esac
+
+    echo "The file restored"
+
+  else
+    echo "The file doesn't exists"
+  fi
+else
+  echo "File path empty"
+fi
+
+# check cscart_logs
+if [[ $CHECK ]];
+then
+  exist_log="$($MYSQL -u $MyUSER -h $MyHOST -p$MyPASS -Bse \"SHOW TABLES FROM $MyDB LIKE 'cscart_logs'\")"
+
+  if [[ -z $exist_log ]];
+  then
+    $($MYSQL -u $MyUSER -h $MyHOST -p$MyPASS -Bse "CREATE TABLE IF NOT EXISTS $MyDB.cscart_logs (
+      log_id int UNSIGNED NOT NULL AUTO_INCREMENT,
+      user_id mediumint UNSIGNED NOT NULL DEFAULT '0',
+      timestamp int UNSIGNED NOT NULL DEFAULT '0',
+      type varchar(16) NOT NULL DEFAULT '',
+      event_type char(1) NOT NULL DEFAULT 'N',
+      action varchar(16) NOT NULL DEFAULT '',
+      object char(1) NOT NULL DEFAULT '',
+      content text,
+      backtrace text,
+      company_id int UNSIGNED NOT NULL DEFAULT '0',
+      PRIMARY KEY (log_id),
+      KEY object (object),
+      KEY type (type,action),
+      KEY idx_timestamp (timestamp)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;")
+
+    echo "cscart_logs created"
+  else
+    echo "cscart_logs exists"
+  fi
+fi
+# /check cscart_logs

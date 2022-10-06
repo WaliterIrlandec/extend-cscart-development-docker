@@ -1,0 +1,77 @@
+version: "3.1"
+services:
+
+  mysql5.7:
+    image: mysql:5.7
+    container_name: ${MYSQL_REMOTE_HOST:-mysqlHost}
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+      MYSQL_DATABASE: ${MYSQL_DB:-cscart}
+    volumes:
+      - ./app/db:/var/lib/mysql
+    ports:
+      - "${MYSQL_REMOTE_PORT:-3306}:3306"
+
+  nginx:
+    image: nginx:alpine
+    container_name: ${NGINX_CONTAINER_NAME:-cscartNginx}
+    working_dir: /etc/nginx
+    volumes:
+      - ./app:/app
+      - ./config/nginx:/etc/nginx/conf.d
+    ports:
+      - "${HTTP_REMOTE_PORT:-8080}:80"
+      - "${HTTPS_REMOTE_PORT:-443}:443"
+    depends_on:
+      # - php7.3
+      - php7.4
+      # - php8.0
+
+  php7.3:
+    build:
+      context: ./config/php7.3
+      dockerfile: Dockerfile
+    container_name: php7.3
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - ./config/php7.3/php-ini-overrides.ini:/usr/local/etc/php/conf.d/00-php.ini
+      - ./bin/sendmail:/usr/local/bin/sendmail
+    environment:
+        PHP_IDE_CONFIG: serverName=localhost
+
+  php7.4:
+    build:
+      context: ./config/php7.4
+      dockerfile: Dockerfile
+    container_name: php7.4
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - ./config/php7.4/php-ini-overrides.ini:/usr/local/etc/php/conf.d/00-php.ini
+      - ./bin/sendmail:/usr/local/bin/sendmail
+    environment:
+        PHP_IDE_CONFIG: serverName=localhost
+
+  php8.0:
+    build:
+      context: ./config/php8.0
+      dockerfile: Dockerfile
+    container_name: php8.0
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - ./config/php8.0/php-ini-overrides.ini:/usr/local/etc/php/conf.d/00-php.ini
+      - ./bin/sendmail:/usr/local/bin/sendmail
+    environment:
+        PHP_IDE_CONFIG: serverName=localhost
+
+# Change default subnet addresses (for uncomment - delete only '#'):
+#networks:
+#  default:
+#    driver: bridge
+#    ipam:
+#      driver: default
+#      config:
+#      - subnet: 10.10.0.1/16
+

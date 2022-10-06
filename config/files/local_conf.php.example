@@ -1,0 +1,12 @@
+<?php
+
+$config['db_host'] = '%MYSQL_REMOTE_HOST%';
+$config['db_name'] = '%MYSQL_DB%';
+$config['db_user'] = '%MYSQL_USER%';
+$config['db_password'] = '%MYSQL_PASSWORD%';
+
+$config['http_host'] = '%DOMAIN_NAME%';
+$config['http_path'] = '';
+
+$config['https_host'] = '%DOMAIN_NAME%';
+$config['https_path'] = '';

@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# default
+DOMAIN_LIST=""
+MYSQL_REMOTE_HOST="mysqlHost"
+
+while [ -n "$1" ]
+do
+case "$1" in
+--domain_list) DOMAIN_LIST="$2"
+shift ;;
+--mysql_remote_host) MYSQL_REMOTE_HOST="$2"
+shift ;;
+esac
+shift
+done
+
+echo "Purge domains from /etc/hosts"
+
+if [[ ${MYSQL_REMOTE_HOST} ]]
+then
+    DOMAIN_LIST="$DOMAIN_LIST,$MYSQL_REMOTE_HOST"
+fi
+
+if [[ ${DOMAIN_LIST} ]]
+then
+  DOMAIN_NAME=$(echo ${DOMAIN_LIST} | tr "," "\n")
+
+  for addr in $DOMAIN_NAME
+  do
+    sudo sed -i "/${addr}$/d" /etc/hosts
+  done
+fi

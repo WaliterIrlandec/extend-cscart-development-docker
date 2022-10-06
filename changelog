@@ -1,0 +1,9 @@
+
+1.0.2
+  -[+] purge /etc/hosts as separate script
+
+1.0.3
+  -[*] mr script remove checking exist DB and LOG table by default
+
+1.0.4
+  -[*] clear .env.example, use NGINX_CONTAINER_NAME
