@@ -31,7 +31,7 @@ services:
     build:
       context: ./config/php7.3
       dockerfile: Dockerfile
-    container_name: php7.3
+    container_name: ${CONTAINER_PREFIX}php7.3
     working_dir: /app
     volumes:
       - ./app:/app
@@ -44,7 +44,7 @@ services:
     build:
       context: ./config/php7.4
       dockerfile: Dockerfile
-    container_name: php7.4
+    container_name: ${CONTAINER_PREFIX}php7.4
     working_dir: /app
     volumes:
       - ./app:/app
@@ -57,7 +57,7 @@ services:
     build:
       context: ./config/php8.0
       dockerfile: Dockerfile
-    container_name: php8.0
+    container_name: ${CONTAINER_PREFIX}php8.0
     working_dir: /app
     volumes:
       - ./app:/app

@@ -28,13 +28,21 @@ shift
 done
 
 # create work folder
-mkdir $(pwd)/app/www;
+mkdir -p $(pwd)/app/www;
+
+# copy and replace nginx/app.conf
+if [ ! -f $(pwd)/config/nginx/app.conf ]
+then
+  echo "Create nginx config"
+  mkdir -p $(pwd)/config/nginx;
+  cp $(pwd)/config/files/app.conf.example $(pwd)/config/nginx/app.conf
+fi
 
 # copy and replace data in the local_conf.php
 if [ ! -f $(pwd)/app/www/local_conf.php ]
 then
   echo "Copy the local_conf.php"
-  cp $(pwd)/config/files/local_conf.php.example $(pwd)/app/www/
+  cp $(pwd)/config/files/local_conf.php.example $(pwd)/app/www/local_conf.php
 
   echo "Set data to the local_conf.php"
   DOMAIN_NAME=$(echo "$DOMAIN_LIST"|cut -d ',' -f1)
