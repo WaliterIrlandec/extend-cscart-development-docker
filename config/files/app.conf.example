@@ -15,14 +15,14 @@ server {
     # listen 80;
 
     # Generate certificates and uncomment the following lines if you need SSL:
-    # listen 443 ssl default_server;
+    listen 443 ssl default_server;
     # ssl_certificate     /app/ssl/ssl.crt;
     # ssl_certificate_key /app/ssl/ssl.key;
 
     # If you run multiple applications on a single Docker instance, use this instead:
-    # listen 443 ssl;
-    # ssl_certificate     /app/ssl/my-app.test.crt;
-    # ssl_certificate_key /app/ssl/my-app.test.key;
+    listen 443 ssl;
+    ssl_certificate     /app/ssl/my-app.test.crt;
+    ssl_certificate_key /app/ssl/my-app.test.key;
 
     # Default encoding
     charset utf-8;

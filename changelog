@@ -11,3 +11,8 @@
 1.0.5
   -[+] CONTAINER_PREFIX
   -[+] init script copy nginx config
+
+1.0.7
+  -[*] enable ssl nginx by default
+  -[+] add make db, make bash alias
+

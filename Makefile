@@ -22,9 +22,15 @@ stop:
 mysql:
 	mysql -u root -p${MYSQL_ROOT_PASSWORD} -h $(MYSQL_REMOTE_HOST)
 
+db:
+	make mysql
+
 # nginx connect
 nginx:
 	docker exec -it $(NGINX_CONTAINER_NAME) /bin/sh
+
+bash:
+	make nginx;
 
 # mysql restore
 mr:

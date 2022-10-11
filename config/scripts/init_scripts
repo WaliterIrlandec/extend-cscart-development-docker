@@ -55,6 +55,8 @@ if [ ! -f $(pwd)/app/ssl/ssl.crt ]
 then
   echo "Create SSL cert"
 
+  DOMAIN_NAME=$(echo "$DOMAIN_LIST"|cut -d ',' -f1)
+
   docker exec -it ${NGINX_CONTAINER_NAME} /bin/sh -c "apk add openssl; mkdir /app/ssl"
-  docker exec -it ${NGINX_CONTAINER_NAME} /bin/sh -c "openssl req -x509 -nodes -days 365 -subj \"/C=CA/ST=QC/O=Company, Inc./CN=${NGINX_CONTAINER_NAME}\" -addext \"subjectAltName=DNS:${NGINX_CONTAINER_NAME}\" -newkey rsa:2048 -keyout /app/ssl/ssl.key -out /app/ssl/ssl.crt;"
+  docker exec -it ${NGINX_CONTAINER_NAME} /bin/sh -c "openssl req -x509 -nodes -days 365 -subj \"/C=CA/ST=QC/O=Company, Inc./CN=${DOMAIN_NAME}\" -addext \"subjectAltName=DNS:${DOMAIN_NAME}\" -newkey rsa:2048 -keyout /app/ssl/ssl.key -out /app/ssl/ssl.crt;"
 fi
