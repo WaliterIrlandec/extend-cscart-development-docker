@@ -10,13 +10,13 @@
 include .env
 
 run:
-	docker-compose up -d --build nginx mysql php7.4 
-	./config/scripts/docker-host-remove --domain_list $(DOMAIN_LIST) --mysql_remote_host $(MYSQL_REMOTE_HOST)
-	./config/scripts/docker-host-update --domain_list $(DOMAIN_LIST) --mysql_remote_host $(MYSQL_REMOTE_HOST) --nginx_container_name $(NGINX_CONTAINER_NAME)
+	docker-compose up -d --build nginx mysql php7.4 phpmyadmin
+	./config/scripts/docker-host-remove --domain_list $(DOMAIN_LIST) --mysql_remote_host $(MYSQL_REMOTE_HOST) --container_prefix $(CONTAINER_PREFIX)
+	./config/scripts/docker-host-update --domain_list $(DOMAIN_LIST) --mysql_remote_host $(MYSQL_REMOTE_HOST) --nginx_container_name $(NGINX_CONTAINER_NAME) --container_prefix $(CONTAINER_PREFIX)
 
 stop:
 	docker-compose down
-	./config/scripts/docker-host-remove --domain_list $(DOMAIN_LIST) --mysql_remote_host $(MYSQL_REMOTE_HOST)
+	./config/scripts/docker-host-remove --domain_list $(DOMAIN_LIST) --mysql_remote_host $(MYSQL_REMOTE_HOST) --container_prefix $(CONTAINER_PREFIX)
 
 # mysql connect
 mysql:

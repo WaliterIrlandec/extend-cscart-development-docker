@@ -11,6 +11,8 @@ case "$1" in
 shift ;;
 --mysql_remote_host) MYSQL_REMOTE_HOST="$2"
 shift ;;
+--container_prefix) CONTAINER_PREFIX="$2"
+shift ;;
 esac
 shift
 done
@@ -20,6 +22,11 @@ echo "Purge domains from /etc/hosts"
 if [[ ${MYSQL_REMOTE_HOST} ]]
 then
     DOMAIN_LIST="$DOMAIN_LIST,$MYSQL_REMOTE_HOST"
+fi
+
+if [[ ${CONTAINER_PREFIX} ]]
+then
+    DOMAIN_LIST="${DOMAIN_LIST},${CONTAINER_PREFIX}pma.local"
 fi
 
 if [[ ${DOMAIN_LIST} ]]

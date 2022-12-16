@@ -16,3 +16,8 @@
   -[*] enable ssl nginx by default
   -[+] add make db, make bash alias
 
+1.0.8
+  -[TMP]
+
+1.1.0
+  -[+] add phpmyadmin container

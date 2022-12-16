@@ -13,6 +13,8 @@ shift ;;
 shift ;;
 --nginx_container_name) NGINX_CONTAINER_NAME="$2"
 shift ;;
+--container_prefix) CONTAINER_PREFIX="$2"
+shift ;;
 esac
 shift
 done
@@ -26,6 +28,7 @@ fi
 declare -A aliasArr
 aliasArr[$NGINX_CONTAINER_NAME]=$DOMAIN_LIST
 aliasArr[$MYSQL_REMOTE_HOST]=$MYSQL_REMOTE_HOST
+aliasArr["${CONTAINER_PREFIX}pma"]="${CONTAINER_PREFIX}pma.local"
 
 # iterate over each machine
 docker ps -a --format "{{.Names}}" \

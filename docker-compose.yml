@@ -65,18 +65,16 @@ services:
       - ./bin/sendmail:/usr/local/bin/sendmail
     environment:
         PHP_IDE_CONFIG: serverName=localhost
-  # phpmyadmin:
-  #   image: phpmyadmin/phpmyadmin
-  #   container_name: pma
-  #   links:
-  #     - mysql
-  #   environment:
-  #     PMA_HOST: mysql
-  #     PMA_PORT: 3306
-  #     PMA_ARBITRARY: 1
-  #   restart: always
-  #   ports:
-  #     - 8081:80
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: ${CONTAINER_PREFIX}pma
+    environment:
+      PMA_HOST: ${MYSQL_REMOTE_HOST:-mysqlHost}
+      PMA_USER: root
+      PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
+    restart: always
+    ports:
+      - 8081:80
 # Change default subnet addresses (for uncomment - delete only '#'):
 #networks:
 #  default:
