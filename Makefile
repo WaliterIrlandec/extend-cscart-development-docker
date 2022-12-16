@@ -10,7 +10,7 @@
 include .env
 
 run:
-	docker-compose up -d --build nginx mysql5.7 php7.4
+	docker-compose up -d --build nginx mysql php7.4 
 	./config/scripts/docker-host-remove --domain_list $(DOMAIN_LIST) --mysql_remote_host $(MYSQL_REMOTE_HOST)
 	./config/scripts/docker-host-update --domain_list $(DOMAIN_LIST) --mysql_remote_host $(MYSQL_REMOTE_HOST) --nginx_container_name $(NGINX_CONTAINER_NAME)
 
