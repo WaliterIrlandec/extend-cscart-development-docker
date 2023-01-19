@@ -1,6 +1,5 @@
 version: "3.1"
 services:
-
   mysql:
     image: mysql:5.7
     container_name: ${MYSQL_REMOTE_HOST:-mysqlHost}
@@ -74,7 +73,16 @@ services:
       PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
     restart: always
     ports:
-      - 8081:80
+      - ${PHPMYADMIN_PORT:-8081}:80
+  sphinx:
+    image: jc21/sphinxsearch
+    container_name: ${CONTAINER_PREFIX}sphinx
+    ports:
+      - ${SPHINX_SphinxQL:-9306}:9306
+      - ${SPHINX_SphinxAPI:-9312}:9312
+    volumes:
+      - "./config/sphinx/sphinx.conf:/etc/sphinx/sphinx.conf"
+      - "./app/sphinx:/var/lib/sphinx"
 # Change default subnet addresses (for uncomment - delete only '#'):
 #networks:
 #  default:

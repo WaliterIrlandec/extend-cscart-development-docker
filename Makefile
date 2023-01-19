@@ -10,7 +10,7 @@
 include .env
 
 run:
-	docker-compose up -d --build nginx mysql php7.4 phpmyadmin
+	docker-compose up -d --build nginx mysql php7.4 phpmyadmin sphinx
 	./config/scripts/docker-host-remove --domain_list $(DOMAIN_LIST) --mysql_remote_host $(MYSQL_REMOTE_HOST) --container_prefix $(CONTAINER_PREFIX)
 	./config/scripts/docker-host-update --domain_list $(DOMAIN_LIST) --mysql_remote_host $(MYSQL_REMOTE_HOST) --nginx_container_name $(NGINX_CONTAINER_NAME) --container_prefix $(CONTAINER_PREFIX)
 
@@ -35,6 +35,13 @@ bash:
 # mysql restore
 mr:
 	./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB) --file_name $(file) 2>/dev/null
+
+# sphinx
+sphinx:
+	docker exec -it ${CONTAINER_PREFIX}sphinx /bin/sh
+
+sphinx-indexer:
+	docker exec -it ${CONTAINER_PREFIX}sphinx indexer --all --rotate
 
 # init
 init:
