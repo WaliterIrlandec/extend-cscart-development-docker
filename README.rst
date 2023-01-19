@@ -1,6 +1,8 @@
 Based on cscart/development-docker.git
 
-
+check that nginx ssl lines disabled
+call make init -> create ssl secrt
+enable ssl conf
 
 - clone project
 [TMP]
