@@ -1,3 +1,16 @@
+
+.. mkdir -p app/www
+.. mkdir ./config/nginx
+.. cp ./config/files/app.conf.example config/nginx/app.conf
+.. cp config/files/.env.example ./.env
+[change .env]
+make init
+make
+make init /*need run make to create ssl*/
+
+
+
+
 Based on cscart/development-docker.git
 
 check that nginx ssl lines disabled

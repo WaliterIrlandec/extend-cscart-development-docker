@@ -3,6 +3,7 @@ app/*
 !app/log/sendmail/.gitkeep
 config/nginx/*
 !config/nginx/app.conf.example
+config/sphinx/*
 
 .env
 .todo

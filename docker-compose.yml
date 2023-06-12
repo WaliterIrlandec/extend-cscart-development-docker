@@ -81,7 +81,7 @@ services:
       - ${SPHINX_SphinxQL:-9306}:9306
       - ${SPHINX_SphinxAPI:-9312}:9312
     volumes:
-      - "./config/sphinx/sphinx.conf:/etc/sphinx/sphinx.conf"
+      - "./config/sphinx:/etc/sphinx"
       - "./app/sphinx:/var/lib/sphinx"
 # Change default subnet addresses (for uncomment - delete only '#'):
 #networks:
