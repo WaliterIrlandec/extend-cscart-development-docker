@@ -2,10 +2,10 @@
 .. mkdir -p app/www
 .. mkdir ./config/nginx
 .. cp ./config/files/app.conf.example config/nginx/app.conf
-.. cp config/files/.env.example ./.env
 [INSTALL]
-make init
+cp config/files/.env.example ./.env
 /*[change .env]*/
+make init
 /*[clone project in /app/www (remove local.conf.php if necessary)]*/
 make
 make init /*need run make to create ssl*/
