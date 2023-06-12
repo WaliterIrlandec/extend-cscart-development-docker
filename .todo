@@ -2,3 +2,5 @@
 ☐ try to use env in all files
 ☐ create cscart_logs -> separate mysql file
 ☐ add list of dockers to env
+☐ separate init for 2 parts
+☐ all domains collector function. Use Prefix + docker if env !exist
