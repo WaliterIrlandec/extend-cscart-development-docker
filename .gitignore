@@ -6,6 +6,6 @@ config/nginx/*
 config/sphinx/*
 
 .env
-.todo
+# .todo
 
 /bck/

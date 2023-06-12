@@ -26,3 +26,10 @@
   -[+] php7.4 enable log
   -[!] sphinx conf
   -[!] gitignore config/sphinx
+
+1.1.3
+  -[!] fix create SSL
+  -[*] remove .todo from .gitignore
+  -[+] add NOT_CSCART env setting. Default N.
+        Passes CS-Cart routine if Y.
+  -[+] add default index.php if NOT_CSCART=Y

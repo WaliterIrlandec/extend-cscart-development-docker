@@ -22,13 +22,18 @@ shift ;;
 shift ;;
 --domain_list) DOMAIN_LIST="$2"
 shift ;;
+--not_cscart) NOT_CSCART="$2"
+shift ;;
 *) echo "$1 is not an option";;
 esac
 shift
 done
 
 # create work folder
-mkdir -p $(pwd)/app/www;
+if [ ! -f $(pwd)/app/www ]
+then
+  mkdir -p $(pwd)/app/www;
+fi
 
 # copy and replace nginx/app.conf
 if [ ! -f $(pwd)/config/nginx/app.conf ]
@@ -38,16 +43,26 @@ then
   cp $(pwd)/config/files/app.conf.example $(pwd)/config/nginx/app.conf
 fi
 
-# copy and replace data in the local_conf.php
-if [ ! -f $(pwd)/app/www/local_conf.php ]
+if [[ ! ${NOT_CSCART} ||  ${NOT_CSCART} == "N" ]]
 then
-  echo "Copy the local_conf.php"
-  cp $(pwd)/config/files/local_conf.php.example $(pwd)/app/www/local_conf.php
+  # copy and replace data in the local_conf.php
+  if [ ! -f $(pwd)/app/www/local_conf.php ]
+  then
+    echo "Copy the local_conf.php"
+    cp $(pwd)/config/files/local_conf.php.example $(pwd)/app/www/local_conf.php
 
-  echo "Set data to the local_conf.php"
-  DOMAIN_NAME=$(echo "$DOMAIN_LIST"|cut -d ',' -f1)
+    echo "Set data to the local_conf.php"
+    DOMAIN_NAME=$(echo "$DOMAIN_LIST"|cut -d ',' -f1)
 
-  sed -i "s/%MYSQL_USER%/$MYSQL_USER/g;s/%MYSQL_PASSWORD%/$MYSQL_PASSWORD/g;s/%MYSQL_REMOTE_HOST%/$MYSQL_REMOTE_HOST/g;s/%MYSQL_DB%/$MYSQL_DB/g;s/%DOMAIN_NAME%/$DOMAIN_NAME/g;" $(pwd)/app/www/local_conf.php
+    sed -i "s/%MYSQL_USER%/$MYSQL_USER/g;s/%MYSQL_PASSWORD%/$MYSQL_PASSWORD/g;s/%MYSQL_REMOTE_HOST%/$MYSQL_REMOTE_HOST/g;s/%MYSQL_DB%/$MYSQL_DB/g;s/%DOMAIN_NAME%/$DOMAIN_NAME/g;" $(pwd)/app/www/local_conf.php
+  fi
+else
+  # copy defaul index.php
+  if [ ! -f $(pwd)/app/www/index.php ]
+  then
+    echo "Copy default index.php"
+    cp $(pwd)/config/files/index.php.example $(pwd)/app/www/index.php
+  fi
 fi
 
 # add ssl cert
@@ -57,6 +72,8 @@ then
 
   DOMAIN_NAME=$(echo "$DOMAIN_LIST"|cut -d ',' -f1)
 
-  docker exec -it ${NGINX_CONTAINER_NAME} /bin/sh -c "apk add openssl; mkdir /app/ssl"
+  docker exec -it ${NGINX_CONTAINER_NAME} /bin/sh -c "apk upgrade --update-cache --available && \
+    apk add openssl && \
+    rm -rf /var/cache/apk/*; mkdir /app/ssl"
   docker exec -it ${NGINX_CONTAINER_NAME} /bin/sh -c "openssl req -x509 -nodes -days 365 -subj \"/C=CA/ST=QC/O=Company, Inc./CN=${DOMAIN_NAME}\" -addext \"subjectAltName=DNS:${DOMAIN_NAME}\" -newkey rsa:2048 -keyout /app/ssl/ssl.key -out /app/ssl/ssl.crt;"
 fi

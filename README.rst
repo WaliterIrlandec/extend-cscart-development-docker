@@ -3,10 +3,27 @@
 .. mkdir ./config/nginx
 .. cp ./config/files/app.conf.example config/nginx/app.conf
 .. cp config/files/.env.example ./.env
-[change .env]
+[INSTALL]
 make init
+/*[change .env]*/
+/*[clone project in /app/www (remove local.conf.php if necessary)]*/
 make
 make init /*need run make to create ssl*/
+make stop
+uncomment ssl lines at config/nginx/app.conf
+    listen 443 ssl default_server;
+    ssl_certificate     /app/ssl/ssl.crt;
+    ssl_certificate_key /app/ssl/ssl.key;
+make
+[/INSTALL]
+
+[ENV SETTINGS]
+DOMAIN_LIST -- to set coolection of local urls for multistorefronts (separator: ',')
+NOT_CSCART=Y -- if Y Passes CS-Cart routine and add default index.php
+[/ENV SETTINGS]
+
+
+
 
 
 
