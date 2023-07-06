@@ -25,6 +25,36 @@ NOT_CSCART=Y -- if Y Passes CS-Cart routine and add default index.php
 
 
 
+[sphinx]
+wget -q https://sphinxsearch.com/files/sphinx-3.3.1-b72d67b-linux-amd64-musl.tar.gz
+cp ./app/sphinx
+add docker-compose php7.4 and nginx volumes:
+    - ./app/sphinx/sphinx-3.3.1:/root/sphinx-3.3.1
+make
+make bash
+cd /root/sphinx-3.3.1
+tar zxf sphinx-3.0.2-2592786-linux-amd64.tar.gz ./
+cd sphinx-3.0.2-2592786-linux-amd64/bin
+./searchd (just test)
+
+error: index 'search': sql_connect: failed to load libmysqlclient
+fix:
+apk add --no-cache mariadb-connector-c-dev
+
+add base config
+make php
+start script to add user -> add company -> generate config
+
+make bash
+start searchd (indexer -> searchd -> indexer with rotate)
+./indexer --config ./sphinxsearch3/sphinx.conf --all
+./searchd  --config ./sphinxsearch3/sphinx.conf
+./indexer --rotate --config ./sphinxsearch3/sphinx.conf --all
+
+TMP change api/s.php 
+db_settings(array('db_host':
+    '127.0.0.1' -> 'c.nelocom.com' (nginx container name)
+[/sphinx]
 
 
 

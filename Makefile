@@ -25,6 +25,9 @@ mysql:
 db:
 	make mysql
 
+db-bash:
+	docker exec -it ${MYSQL_REMOTE_HOST} bash
+
 # nginx connect
 nginx:
 	docker exec -it $(NGINX_CONTAINER_NAME) /bin/sh
@@ -43,19 +46,21 @@ sphinx:
 sphinx-indexer:
 	docker exec -it ${CONTAINER_PREFIX}sphinx indexer --all --rotate
 
+cli-7.3: run
+	docker exec -it ${CONTAINER_PREFIX}php7.3 bash
+
+cli-7.4: run
+	docker exec -it ${CONTAINER_PREFIX}php7.4 bash
+
+cli-8.0: run
+	docker exec -it ${CONTAINER_PREFIX}php8.0 bash
+
+php:
+	make cli-7.4
+
 # init
 init:
 # create db
 	./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB)  --not_cscart $(NOT_CSCART) --additional_check Y 2>/dev/null
-
 # add local_conf, ssl
 	./config/scripts/init_scripts --db_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB) --domain_list $(DOMAIN_LIST) --nginx_container_name $(NGINX_CONTAINER_NAME) --not_cscart $(NOT_CSCART)
-
-cli-7.3: run
-	docker exec -it php7.3 bash
-
-cli-7.4: run
-	docker exec -it php7.4 bash
-
-cli-8.0: run
-	docker exec -it php8.0 bash
