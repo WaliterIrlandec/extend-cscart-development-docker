@@ -33,3 +33,6 @@
   -[+] add NOT_CSCART env setting. Default N.
         Passes CS-Cart routine if Y.
   -[+] add default index.php if NOT_CSCART=Y
+
+1.1.4
+  -[*] small changes .env.example, readme

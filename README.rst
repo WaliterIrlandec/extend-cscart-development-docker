@@ -5,8 +5,8 @@
 [INSTALL]
 cp config/files/.env.example ./.env
 /*[change .env]*/
-make init
-/*[clone project in /app/www (remove local.conf.php if necessary)]*/
+/*[clone project in /app/www (remove local.conf.php if necessary) and mkdir -m777 ./var/cache]*/
+// make init ??
 make
 make init /*need run make to create ssl*/
 make stop
@@ -15,6 +15,10 @@ uncomment ssl lines at config/nginx/app.conf
     ssl_certificate     /app/ssl/ssl.crt;
     ssl_certificate_key /app/ssl/ssl.key;
 make
+unpack database
+    mkdir ./bck/
+    copy name.sql => ./bck/
+    make mr file=name.sql
 [/INSTALL]
 
 [ENV SETTINGS]
