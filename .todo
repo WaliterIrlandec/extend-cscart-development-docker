@@ -4,3 +4,24 @@
 ☐ add list of dockers to env
 ☐ separate init for 2 parts
 ☐ all domains collector function. Use Prefix + docker if env !exist
+
+init script:
+  ☐ read Project name == prefix
+  ☐ read Need to edit config ? N by default
+  ☐ git clone check if exist .env[GIT_REPOSITORY] if empty => read
+  ☐ backup
+    ☐ read bck_file if !in .env
+    ☐ copy and restore file
+    ☐ unzip, untar if necessary
+
+env:
+  ☐ add fnc get config
+  ☐ commit all possible variables with defaul $prefix + name values
+  ☐ use prefix in all
+  ☐ add and use GIT_REPOSITORY
+
+Makefile:
+  ☐ add prj git scripts make git ...
+    ☐ mb add make pull, make push, make status, make commit with alias
+  ☐ rebuild ssl
+    ☐ ssl for all domains!!!

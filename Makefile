@@ -7,7 +7,7 @@
 # mr file=name -- restore mysql from file
 # init -- clone git, create DB, download and restore mysql backup, add ssl, cs-cart routine, run
 
-include .env
+-include .env || true
 
 run:
 	docker-compose up -d --build nginx mysql php7.4 phpmyadmin
@@ -64,3 +64,6 @@ init:
 	./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB)  --not_cscart $(NOT_CSCART) --additional_check Y 2>/dev/null
 # add local_conf, ssl
 	./config/scripts/init_scripts --db_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB) --domain_list $(DOMAIN_LIST) --nginx_container_name $(NGINX_CONTAINER_NAME) --not_cscart $(NOT_CSCART)
+
+install:
+	./config/scripts/install

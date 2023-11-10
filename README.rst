@@ -1,4 +1,29 @@
+Clone repository
+make install
+    edit config (:wq — to save and exit vim :))
+    enter git url
+if didn't enter git
+    go to app/www
+    copy outside local_conf.php (git clone block to non empty folder)
+    copy project
+    return local_conf.php
+DB backup
+    mkdir ./bck/
+    cp %directory%/file.sql ./bck/
+    make mr file=file.sql
 
+
+
+
+
+
+
+
+
+
+
+
+=============================
 .. mkdir -p app/www
 .. mkdir ./config/nginx
 .. cp ./config/files/app.conf.example config/nginx/app.conf

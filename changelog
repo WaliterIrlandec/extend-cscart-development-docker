@@ -36,3 +36,6 @@
 
 1.1.4
   -[*] small changes .env.example, readme
+
+1.1.5
+  -[+] install script

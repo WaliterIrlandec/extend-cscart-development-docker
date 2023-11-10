@@ -1,0 +1,39 @@
+#!/bin/bash
+
+echo "Installing..."
+
+mkdir -p ./app/www
+mkdir -p ./config/nginx
+cp ./config/files/app.conf.example config/nginx/app.conf
+
+echo "Edit config file:"
+cp config/files/.env.example ./.env;
+vim .env;
+echo 'Config file saved';
+
+source .env;
+
+echo "Enter git repository (empty to skip):"
+read git_repo
+if [ -z "$git_repo" ]
+then
+  echo "Skip git clone";
+else
+  echo "Clone frome: " $git_repo;
+  git clone $git_repo;
+fi
+
+make run;
+make init; # to create ssl
+make stop;
+
+echo "Activate SSL"
+# uncomment ssl nginx
+sed -i "s/# listen 443 ssl default_server;/listen 443 ssl default_server;/g;" ./config/nginx/app.conf
+sed -i "s/# ssl_certificate     \/app\/ssl\/ssl.crt;/ssl_certificate     \/app\/ssl\/ssl.crt;/g;" ./config/nginx/app.conf
+sed -i "s/# ssl_certificate_key \/app\/ssl\/ssl.key;/ssl_certificate_key \/app\/ssl\/ssl.key;/g;" ./config/nginx/app.conf
+
+echo "Docker run"
+make run;
+
+echo "Fin!";
