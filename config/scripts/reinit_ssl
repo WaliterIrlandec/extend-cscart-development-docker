@@ -1,0 +1,28 @@
+while [ -n "$1" ]
+do
+case "$1" in
+--db_user) MYSQL_USER="$2"
+shift ;;
+--db_pass) MYSQL_PASSWORD="$2"
+shift ;;
+--remote_host) MYSQL_REMOTE_HOST="$2"
+shift ;;
+--db_name) MYSQL_DB="$2"
+shift ;;
+--nginx_container_name) NGINX_CONTAINER_NAME="$2"
+shift ;;
+--domain_list) DOMAIN_LIST="$2"
+shift ;;
+*) echo "$1 is not an option";;
+esac
+shift
+done
+
+
+echo "re-generati ssl cert"
+
+DOMAIN_NAME=$(echo "$DOMAIN_LIST"|cut -d ',' -f1)
+
+docker exec -it ${NGINX_CONTAINER_NAME} /bin/sh -c "apk add openssl; mkdir /app/ssl"
+docker exec -it ${NGINX_CONTAINER_NAME} /bin/sh -c "openssl req -x509 -nodes -days 365 -subj \"/C=CA/ST=QC/O=Company, Inc./CN=${DOMAIN_NAME}\" -addext \"subjectAltName=DNS:${DOMAIN_NAME}\" -newkey rsa:2048 -keyout /app/ssl/ssl.key -out /app/ssl/ssl.crt;"
+

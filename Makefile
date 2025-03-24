@@ -5,6 +5,7 @@
 # mysql -- connect to mysql cli
 # nginx -- connect to nginx cli
 # mr file=name -- restore mysql from file
+# mm file=name -- restore mysql from project ./.db/ file
 # init -- clone git, create DB, download and restore mysql backup, add ssl, cs-cart routine, run
 
 -include .env || true
@@ -37,7 +38,17 @@ bash:
 
 # mysql restore
 mr:
-	./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB) --file_name $(file) 2>/dev/null
+	./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB) --file_name $(file)
+# ./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB) --file_name $(file) 2>/dev/null
+
+# mysql migraions from project folder
+mm:
+	./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB) --file_name ../app/www/.db/migrations/$(file)
+# ./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB) --file_name ../app/www/.db/migrations/$(file) 2>/dev/null
+
+# mysql migraions from project folder
+show_migration_files:
+	ls -altA ./app/www/.db/migrations/
 
 # sphinx
 sphinx:
@@ -46,13 +57,16 @@ sphinx:
 sphinx-indexer:
 	docker exec -it ${CONTAINER_PREFIX}sphinx indexer --all --rotate
 
-cli-7.3: run
+regenerate-ssl:
+	./config/scripts/reinit_ssl --domain_list $(DOMAIN_LIST) --nginx_container_name $(NGINX_CONTAINER_NAME)
+
+cli-7.3:
 	docker exec -it ${CONTAINER_PREFIX}php7.3 bash
 
-cli-7.4: run
+cli-7.4:
 	docker exec -it ${CONTAINER_PREFIX}php7.4 bash
 
-cli-8.0: run
+cli-8.0:
 	docker exec -it ${CONTAINER_PREFIX}php8.0 bash
 
 php:
