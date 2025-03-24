@@ -1,3 +1,63 @@
 #!/bin/bash
+# widev
 
+source .env
+
+export MYSQL_PWD=$MYSQL_ROOT_PASSWORD
+MYSQL="$(which mysql)"
 folder="bck/from_live"
+
+echo "start"
+
+echo "[DOWNLOAD]"
+echo "coming soon... ajjaja no, c'mon"
+echo "[/DOWNLOAD]"
+
+if ! find $folder -type f | read; then
+	echo "backup folder is empty"
+	exit 1
+fi
+
+echo "[UNZIP]"
+if ls "$folder"/*.qz &>/dev/null; then
+	for archive in "$folder"/*.gz; do
+		if [ -f "$archive" ]; then
+			echo "unzip $archive..."
+			gunzip "$archive"
+		fi
+	done
+else
+	echo "No .gz files"
+fi
+echo "[/UNZIP]"
+
+echo "[RESTORE]"
+mysqladmin -u $MYSQL_USER -h $MYSQL_REMOTE_HOST -p$MYSQL_ROOT_PASSWORD status &>/dev/null
+if [ ! $? -eq 0 ]; then
+	echo "MySQL server not available"
+	exit 1;
+fi
+
+if ls "$folder"/*.sql &>/dev/null; then
+	for sql_file in "$folder"/*.sql; do
+		if [ -f "$sql_file" ]; then
+			echo "Restoring database from $sql_file..."
+			pv "$sql_file" | $MYSQL -u $MYSQL_USER -h $MYSQL_REMOTE_HOST $MYSQL_DB
+
+			# If the restoration is successful
+			if [ $? -eq 0 ]; then
+				echo "Restoration successful, deleting $sql_file..."
+				rm "$sql_file"
+			else
+				echo "Restoration failed for $sql_file, skipping deletion."
+				exit 1
+			fi
+		fi
+	done
+else
+	echo "No .sql files"
+fi
+echo "[/RESTORE]"
+
+echo "fin"
+exit 0

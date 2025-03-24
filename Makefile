@@ -60,6 +60,12 @@ sphinx-indexer:
 regenerate-ssl:
 	./config/scripts/reinit_ssl --domain_list $(DOMAIN_LIST) --nginx_container_name $(NGINX_CONTAINER_NAME)
 
+<<<<<<< HEAD
+=======
+update-database-from-live:
+	./config/scripts/update_database_from_live
+
+>>>>>>> f90efc7 (update_database_from_live)
 cli-7.3:
 	docker exec -it ${CONTAINER_PREFIX}php7.3 bash
 
