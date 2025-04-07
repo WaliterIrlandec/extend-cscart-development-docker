@@ -63,7 +63,7 @@ regenerate-ssl:
 <<<<<<< HEAD
 =======
 update-database-from-live:
-	./config/scripts/update_database_from_live
+	./config/scripts/update_database_from_live -dzr
 
 >>>>>>> f90efc7 (update_database_from_live)
 cli-7.3:
