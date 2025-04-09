@@ -133,7 +133,7 @@ log "$CYAN" "[UNZIP]"
 if ls "$folder"/*.gz &>/dev/null; then
 	for archive in "$folder"/*.gz; do
 		if [ -f "$archive" ]; then
-			log "$BLUE" "unzip $archive..."
+			log "$BLUE" "Unzip: $archive..."
 			gunzip "$archive"
 		fi
 	done
@@ -154,7 +154,7 @@ fi
 if ls "$folder"/*.sql &>/dev/null; then
 	for sql_file in "$folder"/*.sql; do
 		if [ -f "$sql_file" ]; then
-			log "$BLUE" "Restoring database from $sql_file..."
+			log "$BLUE" "Restoring: $sql_file..."
 			pv "$sql_file" | $MYSQL -u $MYSQL_USER -h $MYSQL_REMOTE_HOST $MYSQL_DB
 
 			# If the restoration is successful
