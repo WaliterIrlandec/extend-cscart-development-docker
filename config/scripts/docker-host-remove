@@ -28,6 +28,8 @@ if [[ ${CONTAINER_PREFIX} ]]
 then
     DOMAIN_LIST="${DOMAIN_LIST},${CONTAINER_PREFIX}pma.local"
     DOMAIN_LIST="${DOMAIN_LIST},${CONTAINER_PREFIX}pmasphinx.local"
+else
+    DOMAIN_LIST="${DOMAIN_LIST},pma.local"
 fi
 
 if [[ ${DOMAIN_LIST} ]]
