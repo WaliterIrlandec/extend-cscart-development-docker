@@ -45,3 +45,6 @@
 
 1.1.6
   -[+] regenerate ssh, mm etc
+
+1.1.7
+  -[!] pma.local without prefix did not remove from hosts
