@@ -1,3 +1,5 @@
+☐ log fnc from config/scripts/update_database_from_live to separate file to use for all. param just color name
+☐ scripts to separate folder
 ☐ remove NGINX_CONTAINER_NAME, solo PREFIX
 ☐ try to use env in all files
 ☐ create cscart_logs -> separate mysql file
@@ -6,6 +8,17 @@
 ☐ all domains collector function. Use Prefix + docker if env !exist
 
 init script:
+  ☐ mkdir ./cache -m 777
+  ☐ cscart_stored_sessions like cscart_logs if ∄
+CREATE TABLE `cscart_stored_sessions` (
+  `session_id` varchar(64) NOT NULL,
+  `expiry` int(10) UNSIGNED NOT NULL,
+  `data` blob
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+ALTER TABLE `cscart_stored_sessions`
+  ADD PRIMARY KEY (`session_id`),
+  ADD KEY `expiry` (`expiry`);
+COMMIT;
   ☐ read Project name == prefix
   ☐ read Need to edit config ? N by default
   ☐ git clone check if exist .env[GIT_REPOSITORY] if empty => read
