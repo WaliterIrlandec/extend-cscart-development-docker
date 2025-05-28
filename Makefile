@@ -43,7 +43,7 @@ mr:
 
 # mysql migraions from project folder
 mm:
-	./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB) --file_name ../app/www/.db/migrations/$(file)
+	./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB) --file_name ../app/www/.migrations/$(file)
 # ./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_REMOTE_HOST) --db_name $(MYSQL_DB) --file_name ../app/www/.db/migrations/$(file) 2>/dev/null
 
 # mysql migraions from project folder
