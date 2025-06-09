@@ -84,3 +84,6 @@ init:
 
 install:
 	./config/scripts/install
+
+clear_cscache:
+	sudo rm -rf ./app/www/var/cache/*
