@@ -1,7 +1,7 @@
 version: "3.1"
 services:
   mysql:
-    image: mysql:5.7
+    image: mysql:8.0.41
     container_name: ${MYSQL_REMOTE_HOST:-mysqlHost}
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}

@@ -55,3 +55,6 @@
 1.1.7.3
   -[+] clear cs-cart cache make script
 
+1.1.8
+  -[*] update mysql to v.8.0.41
+
