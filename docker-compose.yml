@@ -8,6 +8,7 @@ services:
       MYSQL_DATABASE: ${MYSQL_DB:-cscart}
     volumes:
       - ./app/db:/var/lib/mysql
+      - ./config/mysql/conf.d:/etc/mysql/conf.d
     ports:
       - "${MYSQL_REMOTE_PORT:-3306}:3306"
 

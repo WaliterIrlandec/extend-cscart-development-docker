@@ -61,3 +61,6 @@
 1.1.9
   -[+] ln /usr/local/bin/php ⇒ /usr/bin/php
 
+1.1.10
+  -[+] mysql conf
+
