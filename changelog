@@ -64,3 +64,6 @@
 1.1.10
   -[+] mysql conf
 
+1.1.11
+  -[+] mysql conf ⇒ remove NO_ZERO_DATE, NO_ZERO_IN_DATE
+
