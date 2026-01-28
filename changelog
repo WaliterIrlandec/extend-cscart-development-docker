@@ -67,3 +67,7 @@
 1.1.11
   -[+] mysql conf ⇒ remove NO_ZERO_DATE, NO_ZERO_IN_DATE
 
+1.1.12
+  -[+] add make changelog
+
+

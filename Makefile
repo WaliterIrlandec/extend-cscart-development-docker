@@ -75,6 +75,9 @@ cli-8.0:
 php:
 	make cli-7.4
 
+migrate:
+	docker exec -it ${CONTAINER_PREFIX}php7.4 php ./www/job_run_migration.php
+
 # init
 init:
 # create db
