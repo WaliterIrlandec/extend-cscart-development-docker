@@ -130,15 +130,30 @@ fi
 
 if [ "$UNZIP" = true ]; then
 log "$CYAN" "[UNZIP]"
+UNZIP_FOUND=false
+
 if ls "$folder"/*.gz &>/dev/null; then
+	UNZIP_FOUND=true
 	for archive in "$folder"/*.gz; do
 		if [ -f "$archive" ]; then
-			log "$BLUE" "Unzip: $archive..."
+			log "$BLUE" "Unzip (gz): $archive..."
 			gunzip "$archive"
 		fi
 	done
-else
-	log "$RED" "No .gz files"
+fi
+
+if ls "$folder"/*.zst &>/dev/null; then
+	UNZIP_FOUND=true
+	for archive in "$folder"/*.zst; do
+		if [ -f "$archive" ]; then
+			log "$BLUE" "Unzip (zst): $archive..."
+			zstd -d --rm "$archive"
+		fi
+	done
+fi
+
+if [ "$UNZIP_FOUND" = false ]; then
+	log "$RED" "No .gz or .zst files"
 fi
 log "$CYAN" "[/UNZIP]"
 fi
@@ -152,10 +167,14 @@ if [ ! $? -eq 0 ]; then
 fi
 
 if ls "$folder"/*.sql &>/dev/null; then
+	# Disable checks and redo log for faster import
+	log "$BLUE" "Disabling checks and redo log for faster import..."
+	$MYSQL -u $MYSQL_USER -h $MYSQL_REMOTE_HOST -e "SET GLOBAL foreign_key_checks=0; SET GLOBAL unique_checks=0; ALTER INSTANCE DISABLE INNODB REDO_LOG;" 2>/dev/null
+
 	for sql_file in "$folder"/*.sql; do
 		if [ -f "$sql_file" ]; then
 			log "$BLUE" "Restoring: $sql_file..."
-			pv "$sql_file" | $MYSQL -u $MYSQL_USER -h $MYSQL_REMOTE_HOST $MYSQL_DB
+			pv "$sql_file" | $MYSQL -u $MYSQL_USER -h $MYSQL_REMOTE_HOST $MYSQL_DB --init-command="SET foreign_key_checks=0; SET unique_checks=0; SET sql_log_bin=0;"
 
 			# If the restoration is successful
 			if [ $? -eq 0 ]; then
@@ -163,10 +182,15 @@ if ls "$folder"/*.sql &>/dev/null; then
 				rm "$sql_file"
 			else
 				log "$RED" "Restoration failed for $sql_file, skipping deletion."
+				$MYSQL -u $MYSQL_USER -h $MYSQL_REMOTE_HOST -e "ALTER INSTANCE ENABLE INNODB REDO_LOG; SET GLOBAL foreign_key_checks=1; SET GLOBAL unique_checks=1;" 2>/dev/null
 				exit 1
 			fi
 		fi
 	done
+
+	# Re-enable redo log and checks
+	log "$BLUE" "Re-enabling redo log and checks..."
+	$MYSQL -u $MYSQL_USER -h $MYSQL_REMOTE_HOST -e "ALTER INSTANCE ENABLE INNODB REDO_LOG; SET GLOBAL foreign_key_checks=1; SET GLOBAL unique_checks=1;" 2>/dev/null
 else
 	log "$RED" "No .sql files"
 fi
