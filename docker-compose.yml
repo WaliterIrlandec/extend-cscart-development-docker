@@ -2,10 +2,10 @@ version: "3.1"
 services:
   mysql:
     image: mysql:8.0.41
-    container_name: ${MYSQL_REMOTE_HOST:-mysqlHost}
+    container_name: ${MYSQL_REMOTE_HOST:-${CONTAINER_PREFIX}Mysql}
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
-      MYSQL_DATABASE: ${MYSQL_DB:-cscart}
+      MYSQL_DATABASE: ${MYSQL_DB:-${CONTAINER_PREFIX}}
     volumes:
       - ./app/db:/var/lib/mysql
       - ./config/mysql/conf.d:/etc/mysql/conf.d
@@ -14,7 +14,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: ${NGINX_CONTAINER_NAME:-cscartNginx}
+    container_name: ${NGINX_CONTAINER_NAME:-${CONTAINER_PREFIX}Nginx}
     working_dir: /etc/nginx
     volumes:
       - ./app:/app
@@ -72,7 +72,7 @@ services:
     image: phpmyadmin/phpmyadmin
     container_name: ${CONTAINER_PREFIX}pma
     environment:
-      PMA_HOST: ${MYSQL_REMOTE_HOST:-mysqlHost}
+      PMA_HOST: ${MYSQL_REMOTE_HOST:-${CONTAINER_PREFIX}Mysql}
       PMA_USER: root
       PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
     restart: always

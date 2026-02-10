@@ -10,6 +10,25 @@
 
 -include .env || true
 
+MYSQL_REMOTE_HOST ?= $(CONTAINER_PREFIX)Mysql
+NGINX_CONTAINER_NAME ?= $(CONTAINER_PREFIX)Nginx
+MYSQL_DB ?= $(CONTAINER_PREFIX)
+HTTP_REMOTE_PORT ?= 8080
+HTTPS_REMOTE_PORT ?= 443
+MYSQL_ROOT_PASSWORD ?= root
+MYSQL_REMOTE_PORT ?= 33306
+PHPMYADMIN_PORT ?= 8081
+NOT_CSCART ?= N
+export MYSQL_REMOTE_HOST
+export NGINX_CONTAINER_NAME
+export MYSQL_DB
+export HTTP_REMOTE_PORT
+export HTTPS_REMOTE_PORT
+export MYSQL_ROOT_PASSWORD
+export MYSQL_REMOTE_PORT
+export PHPMYADMIN_PORT
+export NOT_CSCART
+
 run:
 	docker-compose up -d --build nginx mysql php7.4 phpmyadmin
 	./config/scripts/docker-host-remove --domain_list $(DOMAIN_LIST) --mysql_remote_host $(MYSQL_REMOTE_HOST) --container_prefix $(CONTAINER_PREFIX)

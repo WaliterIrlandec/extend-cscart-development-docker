@@ -73,3 +73,7 @@
 1.1.13
   -[+] restore db zst
   -[+] restore db performance tuning
+
+1.2.0
+  -[*] minimize .env (CONTAINER_PREFIX, DOMAIN_LIST)
+
