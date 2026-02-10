@@ -19,6 +19,7 @@ If you skipped git clone during install::
     # save local_conf.php (git clone requires empty folder)
     # copy your project files
     # restore local_conf.php
+    # mkdir -m777 ./var/cache
 
 
 DB Backup Restore
