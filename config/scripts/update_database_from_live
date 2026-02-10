@@ -155,13 +155,24 @@ else
 		FILENAME="${CLEANED//%DATE%/$AVAILABLE_DATE}"
 
 		# skip download if local file matches remote size (unless --force)
+		# also skip if unzipped version already exists (.zst → .sql, .gz → .sql)
 		LOCAL_FILE="$folder/$FILENAME"
-		if [ "$FORCE" != true ] && [ -f "$LOCAL_FILE" ]; then
-			LOCAL_SIZE=$(stat -c%s "$LOCAL_FILE" 2>/dev/null)
-			REMOTE_SIZE=$(get_remote_size "$FILENAME")
-			if [ -n "$REMOTE_SIZE" ] && [ "$LOCAL_SIZE" = "$REMOTE_SIZE" ]; then
-				log "$YELLOW" "Skip (already downloaded, same size $LOCAL_SIZE): $FILENAME"
+		if [ "$FORCE" != true ]; then
+			UNPACKED_FILE="${LOCAL_FILE%.zst}"
+			UNPACKED_FILE="${UNPACKED_FILE%.gz}"
+			if [ "$UNPACKED_FILE" != "$LOCAL_FILE" ] && [ -f "$UNPACKED_FILE" ]; then
+				# remove leftover archive from interrupted download
+				[ -f "$LOCAL_FILE" ] && rm "$LOCAL_FILE"
+				log "$YELLOW" "Skip (already unpacked): $UNPACKED_FILE"
 				continue
+			fi
+			if [ -f "$LOCAL_FILE" ]; then
+				LOCAL_SIZE=$(stat -c%s "$LOCAL_FILE" 2>/dev/null)
+				REMOTE_SIZE=$(get_remote_size "$FILENAME")
+				if [ -n "$REMOTE_SIZE" ] && [ "$LOCAL_SIZE" = "$REMOTE_SIZE" ]; then
+					log "$YELLOW" "Skip (already downloaded, same size $LOCAL_SIZE): $FILENAME"
+					continue
+				fi
 			fi
 		fi
 
@@ -196,7 +207,7 @@ if ls "$folder"/*.zst &>/dev/null; then
 	for archive in "$folder"/*.zst; do
 		if [ -f "$archive" ]; then
 			log "$BLUE" "Unzip (zst): $archive..."
-			zstd -d --rm "$archive"
+			zstd -d -f --rm "$archive"
 		fi
 	done
 fi
