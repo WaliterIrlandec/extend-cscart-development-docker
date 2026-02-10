@@ -29,6 +29,7 @@ log() {
 DOWNLOAD=false
 UNZIP=false
 RESTORE=false
+FORCE=false
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --download)
@@ -43,6 +44,10 @@ while [[ $# -gt 0 ]]; do
       RESTORE=true
       shift
       ;;
+    --force)
+      FORCE=true
+      shift
+      ;;
     -*)  # Short options, possibly combined
       FLAGS="${1:1}"  # Remove leading dash
       for (( i=0; i<${#FLAGS}; i++ )); do
@@ -50,6 +55,7 @@ while [[ $# -gt 0 ]]; do
           d) DOWNLOAD=true ;;
           z) UNZIP=true ;;
           r) RESTORE=true ;;
+          f) FORCE=true ;;
           *) log "$RED" "Unknown option: -${FLAGS:$i:1}"; exit 1 ;;
         esac
       done
@@ -67,15 +73,45 @@ log "$GREEN" "start"
 
 if [ "$DOWNLOAD" = true ]; then
 log "$CYAN" "[DOWNLOAD]"
-if [ -z "$REMOVE_BCK_URL" ] || [ -z "$REMOVE_BCK_USER" ] || [ -z "$REMOVE_BCK_FILES" ]; then
-	log "$RED" "REMOVE_BCK_URL, REMOVE_BCK_USER, REMOVE_BCK_FILES are required. Skip download…"
+
+REMOVE_BCK_TYPE="${REMOVE_BCK_TYPE:-curl}"
+
+if [ -z "$REMOVE_BCK_URL" ] || [ -z "$REMOVE_BCK_FILES" ]; then
+	log "$RED" "REMOVE_BCK_URL, REMOVE_BCK_FILES are required. Skip download…"
+elif [ "$REMOVE_BCK_TYPE" = "curl" ] && { [ -z "$REMOVE_BCK_USER" ] || [ -z "$REMOVE_BCK_PWD" ]; }; then
+	log "$RED" "REMOVE_BCK_USER, REMOVE_BCK_PWD are required for curl mode. Skip download…"
 else
+	# SCP: split host:path from REMOVE_BCK_URL
+	if [ "$REMOVE_BCK_TYPE" = "scp" ]; then
+		SCP_HOST="${REMOVE_BCK_URL%%:*}"
+		SCP_PATH="${REMOVE_BCK_URL#*:}"
+	fi
+
 	check_file() {
-		local file_url="$1"
-		if curl --silent --head --fail -u "$REMOVE_BCK_USER:$REMOVE_BCK_PWD" "$file_url" > /dev/null; then
-			return 0
+		local file="$1"
+		if [ "$REMOVE_BCK_TYPE" = "scp" ]; then
+			ssh "$SCP_HOST" "test -f '${SCP_PATH}${file}'" 2>/dev/null
 		else
-			return 1
+			curl --silent --head --fail -u "$REMOVE_BCK_USER:$REMOVE_BCK_PWD" "$REMOVE_BCK_URL$file" > /dev/null
+		fi
+	}
+
+	download_file() {
+		local file="$1"
+		if [ "$REMOVE_BCK_TYPE" = "scp" ]; then
+			scp "$SCP_HOST:${SCP_PATH}${file}" "$folder/"
+		else
+			curl -u "$REMOVE_BCK_USER:$REMOVE_BCK_PWD" -O "$REMOVE_BCK_URL$file" --output-dir "$folder"
+		fi
+	}
+
+	# get remote file size in bytes
+	get_remote_size() {
+		local file="$1"
+		if [ "$REMOVE_BCK_TYPE" = "scp" ]; then
+			ssh "$SCP_HOST" "stat -c%s '${SCP_PATH}${file}'" 2>/dev/null
+		else
+			curl --silent --head -u "$REMOVE_BCK_USER:$REMOVE_BCK_PWD" "$REMOVE_BCK_URL$file" 2>/dev/null | grep -i content-length | awk '{print $2}' | tr -d '\r'
 		fi
 	}
 
@@ -85,10 +121,10 @@ else
 		local yesterday_date=$(date -d "yesterday" +%Y%m%d)
 
 		# check if exist today's bck
-		if check_file "$REMOVE_BCK_URL${filename//%DATE%/$current_date}"; then
+		if check_file "${filename//%DATE%/$current_date}"; then
 			echo "$current_date"
 		# if no, check yesterday's bck
-		elif check_file "$REMOVE_BCK_URL${filename//%DATE%/$yesterday_date}"; then
+		elif check_file "${filename//%DATE%/$yesterday_date}"; then
 			echo "$yesterday_date"
 		else
 			echo ""
@@ -104,7 +140,7 @@ else
 	AVAILABLE_DATE=$(get_available_date "$FILENAME")
 
 	if [ -z "$AVAILABLE_DATE" ]; then
-		log "$RED" "no remove backup files or error access"
+		log "$RED" "no remote backup files or error access"
 		exit 1
 	fi
 
@@ -118,8 +154,19 @@ else
 
 		FILENAME="${CLEANED//%DATE%/$AVAILABLE_DATE}"
 
-		log "$BLUE" "Download: $FILENAME"
-		curl -u "$REMOVE_BCK_USER:$REMOVE_BCK_PWD" -O "$REMOVE_BCK_URL$FILENAME" --output-dir "$folder"
+		# skip download if local file matches remote size (unless --force)
+		LOCAL_FILE="$folder/$FILENAME"
+		if [ "$FORCE" != true ] && [ -f "$LOCAL_FILE" ]; then
+			LOCAL_SIZE=$(stat -c%s "$LOCAL_FILE" 2>/dev/null)
+			REMOTE_SIZE=$(get_remote_size "$FILENAME")
+			if [ -n "$REMOTE_SIZE" ] && [ "$LOCAL_SIZE" = "$REMOTE_SIZE" ]; then
+				log "$YELLOW" "Skip (already downloaded, same size $LOCAL_SIZE): $FILENAME"
+				continue
+			fi
+		fi
+
+		log "$BLUE" "Download ($REMOVE_BCK_TYPE): $FILENAME"
+		download_file "$FILENAME"
 	done
 fi
 log "$CYAN" "[/DOWNLOAD]"

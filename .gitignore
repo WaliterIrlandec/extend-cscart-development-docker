@@ -7,5 +7,7 @@ config/sphinx/*
 
 .env
 # .todo
+.claude/
+memory/
 
 /bck/

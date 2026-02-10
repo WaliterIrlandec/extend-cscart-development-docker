@@ -31,6 +31,32 @@ DB Backup Restore
     make mr file=file.sql
 
 
+Update Database from Live
+-------------------------
+
+Download and restore a database backup from a remote server.
+
+1. Add ``REMOVE_BCK_*`` variables to ``.env`` (see below)
+2. Run ``make update-database-from-live``
+
+**curl mode** (default) — download via HTTP basic auth::
+
+    REMOVE_BCK_TYPE=curl
+    REMOVE_BCK_URL=https://example.com/backups/
+    REMOVE_BCK_USER=user
+    REMOVE_BCK_PWD=password
+    REMOVE_BCK_FILES=dbname.%DATE%.sql.zst
+
+**scp mode** — download via SSH (uses ssh keys)::
+
+    REMOVE_BCK_TYPE=scp
+    REMOVE_BCK_URL=myhost:/var/www/db_bak/mydb/
+    REMOVE_BCK_FILES=mydb.%DATE%.sql.zst
+
+``%DATE%`` is replaced with today's date (``YYYYMMDD``), falling back to yesterday if not found.
+Multiple files can be comma-separated: ``db.%DATE%.sql.zst,media.%DATE%.tar.zst``
+
+
 Make Commands
 -------------
 
@@ -132,4 +158,9 @@ Optional (with defaults)
     # NOT_CSCART=N
     # SPHINX_SphinxQL=9306
     # SPHINX_SphinxAPI=9312
+    # REMOVE_BCK_TYPE=curl|scp
+    # REMOVE_BCK_URL=https://example.com/backups/
+    # REMOVE_BCK_USER=user
+    # REMOVE_BCK_PWD=password
+    # REMOVE_BCK_FILES=dbname.%DATE%.sql.zst,dbname2.%DATE%.sql.gz
 

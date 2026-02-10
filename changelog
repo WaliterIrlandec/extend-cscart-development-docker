@@ -83,3 +83,7 @@
 1.2.2
   -[!] bugfix
   -[*] pma install only if agree on install step
+
+1.2.3
+  -[+] autoupdate database for scp connection
+
