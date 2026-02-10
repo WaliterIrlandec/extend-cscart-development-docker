@@ -10,7 +10,9 @@
 
 -include .env || true
 
-MYSQL_DB ?= $(CONTAINER_PREFIX)
+ifeq ($(MYSQL_DB),)
+MYSQL_DB := $(CONTAINER_PREFIX)
+endif
 HTTP_REMOTE_PORT ?= 8080
 HTTPS_REMOTE_PORT ?= 443
 MYSQL_ROOT_PASSWORD ?= root
