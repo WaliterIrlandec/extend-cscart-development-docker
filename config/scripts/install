@@ -13,6 +13,17 @@ echo 'Config file saved';
 
 source .env;
 
+echo "Install phpMyAdmin? (y/N):"
+read pma_answer
+if [[ "$pma_answer" == "y" || "$pma_answer" == "Y" ]]
+then
+  sed -i '/^# PHPMYADMIN=/d' .env
+  sed -i '/^DOMAIN_LIST=/a PHPMYADMIN=Y' .env
+  echo "phpMyAdmin enabled";
+else
+  echo "phpMyAdmin skipped";
+fi
+
 echo "Enter git repository (empty to skip):"
 read git_repo
 if [ -z "$git_repo" ]

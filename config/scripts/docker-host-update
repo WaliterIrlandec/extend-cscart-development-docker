@@ -1,35 +1,38 @@
 #!/bin/bash
 
-NGINX_CONTAINER_NAME=""
-MYSQL_REMOTE_HOST=""
 DOMAIN_LIST=""
+CONTAINER_PREFIX=""
+PHPMYADMIN="N"
 
 while [ -n "$1" ]
 do
 case "$1" in
 --domain_list) DOMAIN_LIST="$2"
 shift ;;
---mysql_remote_host) MYSQL_REMOTE_HOST="$2"
-shift ;;
---nginx_container_name) NGINX_CONTAINER_NAME="$2"
-shift ;;
 --container_prefix) CONTAINER_PREFIX="$2"
+shift ;;
+--phpmyadmin) PHPMYADMIN="$2"
 shift ;;
 esac
 shift
 done
 
-if [[ ! ${NGINX_CONTAINER_NAME} ||  ! ${MYSQL_REMOTE_HOST}  ||  ! ${DOMAIN_LIST} ]]
+if [[ ! ${CONTAINER_PREFIX} || ! ${DOMAIN_LIST} ]]
 then
-	echo 'The NGINX_CONTAINER_NAME, MYSQL_REMOTE_HOST, DOMAIN_LIST params are required';
+	echo 'The CONTAINER_PREFIX, DOMAIN_LIST params are required';
 	exit;
 fi
 
+MYSQL_HOST="${CONTAINER_PREFIX}-mysql"
+NGINX_HOST="${CONTAINER_PREFIX}-nginx"
+
 declare -A aliasArr
-aliasArr[$NGINX_CONTAINER_NAME]=$DOMAIN_LIST
-aliasArr[$MYSQL_REMOTE_HOST]=$MYSQL_REMOTE_HOST
-aliasArr["${CONTAINER_PREFIX}pma"]="${CONTAINER_PREFIX}pma.local"
-aliasArr["${CONTAINER_PREFIX}sphinx"]="${CONTAINER_PREFIX}sphinx.local"
+aliasArr[$NGINX_HOST]=$DOMAIN_LIST
+aliasArr[$MYSQL_HOST]=$MYSQL_HOST
+if [[ ${PHPMYADMIN} == "Y" ]]; then
+	aliasArr["${CONTAINER_PREFIX}-pma"]="${CONTAINER_PREFIX}-pma.local"
+fi
+aliasArr["${CONTAINER_PREFIX}-sphinx"]="${CONTAINER_PREFIX}-sphinx.local"
 
 # iterate over each machine
 docker ps -a --format "{{.Names}}" \

@@ -5,7 +5,7 @@ MYSQL_PASSWORD="root"
 MYSQL_REMOTE_HOST="localhost"
 MYSQL_DB="cscart"
 DOMAIN_LIST="localhost"
-NGINX_CONTAINER_NAME=""
+CONTAINER_PREFIX=""
 
 while [ -n "$1" ]
 do
@@ -18,7 +18,7 @@ shift ;;
 shift ;;
 --db_name) MYSQL_DB="$2"
 shift ;;
---nginx_container_name) NGINX_CONTAINER_NAME="$2"
+--container_prefix) CONTAINER_PREFIX="$2"
 shift ;;
 --domain_list) DOMAIN_LIST="$2"
 shift ;;
@@ -28,6 +28,8 @@ shift ;;
 esac
 shift
 done
+
+NGINX_HOST="${CONTAINER_PREFIX}-nginx"
 
 # create work folder
 if [ ! -f $(pwd)/app/www ]
@@ -72,8 +74,8 @@ then
 
   DOMAIN_NAME=$(echo "$DOMAIN_LIST"|cut -d ',' -f1)
 
-  docker exec -it ${NGINX_CONTAINER_NAME} /bin/sh -c "apk upgrade --update-cache --available && \
+  docker exec -it ${NGINX_HOST} /bin/sh -c "apk upgrade --update-cache --available && \
     apk add openssl && \
     rm -rf /var/cache/apk/*; mkdir /app/ssl"
-  docker exec -it ${NGINX_CONTAINER_NAME} /bin/sh -c "openssl req -x509 -nodes -days 365 -subj \"/C=CA/ST=QC/O=Company, Inc./CN=${DOMAIN_NAME}\" -addext \"subjectAltName=DNS:${DOMAIN_NAME}\" -newkey rsa:2048 -keyout /app/ssl/ssl.key -out /app/ssl/ssl.crt;"
+  docker exec -it ${NGINX_HOST} /bin/sh -c "openssl req -x509 -nodes -days 365 -subj \"/C=CA/ST=QC/O=Company, Inc./CN=${DOMAIN_NAME}\" -addext \"subjectAltName=DNS:${DOMAIN_NAME}\" -newkey rsa:2048 -keyout /app/ssl/ssl.key -out /app/ssl/ssl.crt;"
 fi

@@ -116,25 +116,19 @@ Required
     CONTAINER_PREFIX=test
     DOMAIN_LIST=demo.cscart.local,demo2.cscart.local
 
-Optional (derived from CONTAINER_PREFIX)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Optional (with defaults)
+~~~~~~~~~~~~~~~~~~~~~~~~
 
 ::
 
     # MYSQL_DB=${CONTAINER_PREFIX}
-    # MYSQL_REMOTE_HOST=${CONTAINER_PREFIX}Mysql
-    # NGINX_CONTAINER_NAME=${CONTAINER_PREFIX}Nginx
-
-Optional (with hardcoded defaults)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-::
-
     # HTTP_REMOTE_PORT=8080
     # HTTPS_REMOTE_PORT=443
     # MYSQL_ROOT_PASSWORD=root
     # MYSQL_REMOTE_PORT=33306
+    # PHPMYADMIN=N
     # PHPMYADMIN_PORT=8081
     # NOT_CSCART=N
     # SPHINX_SphinxQL=9306
     # SPHINX_SphinxAPI=9312
+

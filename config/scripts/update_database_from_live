@@ -3,6 +3,8 @@
 
 source .env
 
+MYSQL_REMOTE_HOST="${CONTAINER_PREFIX}-mysql"
+MYSQL_USER="root"
 export MYSQL_PWD=$MYSQL_ROOT_PASSWORD
 MYSQL="$(which mysql)"
 SCRIPT_DIR="$(dirname "${BASH_SOURCE[0]}")"

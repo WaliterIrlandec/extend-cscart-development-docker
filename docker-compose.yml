@@ -2,7 +2,7 @@ version: "3.1"
 services:
   mysql:
     image: mysql:8.0.41
-    container_name: ${MYSQL_REMOTE_HOST:-${CONTAINER_PREFIX}Mysql}
+    container_name: ${CONTAINER_PREFIX}-mysql
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
       MYSQL_DATABASE: ${MYSQL_DB:-${CONTAINER_PREFIX}}
@@ -14,7 +14,7 @@ services:
 
   nginx:
     image: nginx:alpine
-    container_name: ${NGINX_CONTAINER_NAME:-${CONTAINER_PREFIX}Nginx}
+    container_name: ${CONTAINER_PREFIX}-nginx
     working_dir: /etc/nginx
     volumes:
       - ./app:/app
@@ -33,7 +33,7 @@ services:
     build:
       context: ./config/php7.3
       dockerfile: Dockerfile
-    container_name: ${CONTAINER_PREFIX}php7.3
+    container_name: ${CONTAINER_PREFIX}-php7.3
     working_dir: /app
     volumes:
       - ./app:/app
@@ -46,7 +46,7 @@ services:
     build:
       context: ./config/php7.4
       dockerfile: Dockerfile
-    container_name: ${CONTAINER_PREFIX}php7.4
+    container_name: ${CONTAINER_PREFIX}-php7.4
     working_dir: /app
     volumes:
       - ./app:/app
@@ -60,7 +60,7 @@ services:
     build:
       context: ./config/php8.0
       dockerfile: Dockerfile
-    container_name: ${CONTAINER_PREFIX}php8.0
+    container_name: ${CONTAINER_PREFIX}-php8.0
     working_dir: /app
     volumes:
       - ./app:/app
@@ -68,19 +68,21 @@ services:
       - ./bin/sendmail:/usr/local/bin/sendmail
     environment:
         PHP_IDE_CONFIG: serverName=localhost
+
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: ${CONTAINER_PREFIX}pma
+    container_name: ${CONTAINER_PREFIX}-pma
     environment:
-      PMA_HOST: ${MYSQL_REMOTE_HOST:-${CONTAINER_PREFIX}Mysql}
+      PMA_HOST: ${CONTAINER_PREFIX}-mysql
       PMA_USER: root
       PMA_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
     restart: always
     ports:
       - ${PHPMYADMIN_PORT:-8081}:80
+
   sphinx:
     image: jc21/sphinxsearch
-    container_name: ${CONTAINER_PREFIX}sphinx
+    container_name: ${CONTAINER_PREFIX}-sphinx
     ports:
       - ${SPHINX_SphinxQL:-9306}:9306
       - ${SPHINX_SphinxAPI:-9312}:9312
@@ -95,4 +97,3 @@ services:
 #      driver: default
 #      config:
 #      - subnet: 10.10.0.1/16
-

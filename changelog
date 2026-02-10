@@ -79,3 +79,7 @@
 
 1.2.1
   -[*] improved readme
+
+1.2.2
+  -[!] bugfix
+  -[*] pma install only if agree on install step
