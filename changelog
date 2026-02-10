@@ -77,3 +77,5 @@
 1.2.0
   -[*] minimize .env (CONTAINER_PREFIX, DOMAIN_LIST)
 
+1.2.1
+  -[*] improved readme
