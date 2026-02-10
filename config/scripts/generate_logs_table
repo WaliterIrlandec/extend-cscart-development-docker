@@ -1,0 +1,48 @@
+#!/bin/bash
+
+MyUSER="root"
+MyPASS="root"
+MyHOST="localhost"
+MyDB="cscart"
+
+MYSQL="$(which mysql)"
+
+while [ -n "$1" ]
+do
+case "$1" in
+--root_pass) MyPASS="$2"
+shift ;;
+--remote_host) MyHOST="$2"
+shift ;;
+--db_name) MyDB="$2"
+shift ;;
+*) echo "$1 is not an option";;
+esac
+shift
+done
+
+exist_log="$($MYSQL -u $MyUSER -h $MyHOST -p$MyPASS -Bse "SHOW TABLES FROM $MyDB LIKE 'cscart_logs'")"
+
+if [[ -z $exist_log ]];
+then
+  $($MYSQL -u $MyUSER -h $MyHOST -p$MyPASS -Bse "CREATE TABLE IF NOT EXISTS $MyDB.cscart_logs (
+    log_id int UNSIGNED NOT NULL AUTO_INCREMENT,
+    user_id mediumint UNSIGNED NOT NULL DEFAULT '0',
+    timestamp int UNSIGNED NOT NULL DEFAULT '0',
+    type varchar(16) NOT NULL DEFAULT '',
+    event_type char(1) NOT NULL DEFAULT 'N',
+    action varchar(16) NOT NULL DEFAULT '',
+    object char(1) NOT NULL DEFAULT '',
+    content text,
+    backtrace text,
+    company_id int UNSIGNED NOT NULL DEFAULT '0',
+    PRIMARY KEY (log_id),
+    KEY object (object),
+    KEY type (type,action),
+    KEY idx_timestamp (timestamp)
+  ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;")
+
+  echo "cscart_logs created"
+else
+  echo "cscart_logs exists"
+fi

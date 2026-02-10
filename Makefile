@@ -20,6 +20,8 @@ MYSQL_REMOTE_PORT ?= 33306
 PHPMYADMIN_PORT ?= 8081
 PHPMYADMIN ?= N
 NOT_CSCART ?= N
+export CONTAINER_PREFIX
+export DOMAIN_LIST
 export MYSQL_DB
 export HTTP_REMOTE_PORT
 export HTTPS_REMOTE_PORT
@@ -111,6 +113,9 @@ init:
 	./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_HOST) --db_name $(MYSQL_DB) --not_cscart $(NOT_CSCART) --additional_check Y 2>/dev/null
 # add local_conf, ssl
 	./config/scripts/init_scripts --db_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_HOST) --db_name $(MYSQL_DB) --domain_list $(DOMAIN_LIST) --container_prefix $(CONTAINER_PREFIX) --not_cscart $(NOT_CSCART)
+
+generate_logs_table:
+	./config/scripts/generate_logs_table --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_HOST) --db_name $(MYSQL_DB)
 
 install:
 	./config/scripts/install

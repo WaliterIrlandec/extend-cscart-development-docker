@@ -81,31 +81,7 @@ then
   # check cscart_logs
   if [[ $CHECK ]];
   then
-    exist_log="$($MYSQL -u $MyUSER -h $MyHOST -p$MyPASS -Bse \"SHOW TABLES FROM $MyDB LIKE 'cscart_logs'\")"
-
-    if [[ -z $exist_log ]];
-    then
-      $($MYSQL -u $MyUSER -h $MyHOST -p$MyPASS -Bse "CREATE TABLE IF NOT EXISTS $MyDB.cscart_logs (
-        log_id int UNSIGNED NOT NULL AUTO_INCREMENT,
-        user_id mediumint UNSIGNED NOT NULL DEFAULT '0',
-        timestamp int UNSIGNED NOT NULL DEFAULT '0',
-        type varchar(16) NOT NULL DEFAULT '',
-        event_type char(1) NOT NULL DEFAULT 'N',
-        action varchar(16) NOT NULL DEFAULT '',
-        object char(1) NOT NULL DEFAULT '',
-        content text,
-        backtrace text,
-        company_id int UNSIGNED NOT NULL DEFAULT '0',
-        PRIMARY KEY (log_id),
-        KEY object (object),
-        KEY type (type,action),
-        KEY idx_timestamp (timestamp)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3;")
-
-      echo "cscart_logs created"
-    else
-      echo "cscart_logs exists"
-    fi
+    $(dirname "$0")/generate_logs_table --root_pass $MyPASS --remote_host $MyHOST --db_name $MyDB
   fi
   # /check cscart_logs
 fi

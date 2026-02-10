@@ -87,3 +87,5 @@
 1.2.3
   -[+] autoupdate database for scp connection
 
+1.2.4
+  -[+] generate logs table script
