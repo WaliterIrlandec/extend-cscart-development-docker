@@ -55,7 +55,7 @@ Download and restore a database backup from a remote server.
     REMOVE_BCK_FILES=mydb.%DATE%.sql.zst
 
 ``%DATE%`` is replaced with today's date (``YYYYMMDD``), falling back to yesterday if not found.
-Multiple files can be comma-separated: ``db.%DATE%.sql.zst,media.%DATE%.tar.zst``
+Multiple files can be comma-separated: ``db.%DATE%.sql.zst,media.%DATE%.sql.gz``
 
 
 Make Commands

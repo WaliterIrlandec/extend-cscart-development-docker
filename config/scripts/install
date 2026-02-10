@@ -35,6 +35,13 @@ else
 fi
 
 make run;
+
+echo "Waiting for MySQL to be ready..."
+until mysql -u root -p${MYSQL_ROOT_PASSWORD:-root} -h ${CONTAINER_PREFIX}-mysql -e "SELECT 1" 2>/dev/null; do
+  sleep 2
+done
+echo "MySQL is ready"
+
 make init; # to create ssl
 make stop;
 
