@@ -9,17 +9,10 @@ Quick Start
 
     git clone <repo-url>
     make install
-
-1. Edit ``.env`` (min required: ``CONTAINER_PREFIX``, ``DOMAIN_LIST``)
-2. Optionally enter git URL when prompted
-
-If you skipped git clone during install::
-
     cd app/www
-    # save local_conf.php (git clone requires empty folder)
     # copy your project files
-    # restore local_conf.php
-    # mkdir -m777 ./var/cache
+    cp ../../config/files/local_conf.php ./
+    mkdir -m777 ./var/cache
 
 
 DB Backup Restore
