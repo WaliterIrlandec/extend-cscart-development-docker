@@ -12,6 +12,7 @@ app/log/php/*
 !app/log/php/.gitkeep
 config/nginx/*
 !config/nginx/app.conf.example
+config/files/local_conf.php
 config/sphinx/*
 
 .env

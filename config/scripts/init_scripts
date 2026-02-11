@@ -47,16 +47,15 @@ fi
 
 if [[ ! ${NOT_CSCART} ||  ${NOT_CSCART} == "N" ]]
 then
-  # copy and replace data in the local_conf.php
-  if [ ! -f $(pwd)/app/www/local_conf.php ]
+  # generate local_conf.php
+  if [ ! -f $(pwd)/config/files/local_conf.php ]
   then
-    echo "Copy the local_conf.php"
-    cp $(pwd)/config/files/local_conf.php.example $(pwd)/app/www/local_conf.php
+    echo "Generate local_conf.php"
+    cp $(pwd)/config/files/local_conf.php.example $(pwd)/config/files/local_conf.php
 
-    echo "Set data to the local_conf.php"
     DOMAIN_NAME=$(echo "$DOMAIN_LIST"|cut -d ',' -f1)
 
-    sed -i "s/%MYSQL_USER%/$MYSQL_USER/g;s/%MYSQL_PASSWORD%/$MYSQL_PASSWORD/g;s/%MYSQL_REMOTE_HOST%/$MYSQL_REMOTE_HOST/g;s/%MYSQL_DB%/$MYSQL_DB/g;s/%DOMAIN_NAME%/$DOMAIN_NAME/g;" $(pwd)/app/www/local_conf.php
+    sed -i "s/%MYSQL_USER%/$MYSQL_USER/g;s/%MYSQL_PASSWORD%/$MYSQL_PASSWORD/g;s/%MYSQL_REMOTE_HOST%/$MYSQL_REMOTE_HOST/g;s/%MYSQL_DB%/$MYSQL_DB/g;s/%DOMAIN_NAME%/$DOMAIN_NAME/g;" $(pwd)/config/files/local_conf.php
   fi
 else
   # copy defaul index.php
