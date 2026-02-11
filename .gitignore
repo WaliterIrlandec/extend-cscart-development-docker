@@ -1,6 +1,15 @@
 app/*
+!app/db/
+app/db/*
 !app/db/.gitkeep
+!app/log/
+app/log/*
+!app/log/sendmail/
+app/log/sendmail/*
 !app/log/sendmail/.gitkeep
+!app/log/php/
+app/log/php/*
+!app/log/php/.gitkeep
 config/nginx/*
 !config/nginx/app.conf.example
 config/sphinx/*
@@ -10,4 +19,5 @@ config/sphinx/*
 .claude/
 memory/
 
-/bck/
+/bck/*
+!/bck/.gitkeep

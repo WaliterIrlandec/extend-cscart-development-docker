@@ -89,3 +89,8 @@
 
 1.2.4
   -[+] generate logs table script
+
+1.2.5
+  -[+] up nginx fastcgi_buffer value
+  -[+] empty app/log/
+  
