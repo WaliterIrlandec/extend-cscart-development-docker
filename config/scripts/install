@@ -41,6 +41,9 @@ else
   echo "phpMyAdmin skipped";
 fi
 
+./config/scripts/docker-host-remove --domain_list ${DOMAIN_LIST} --container_prefix ${CONTAINER_PREFIX}
+docker-compose down 2>/dev/null || true
+
 make run;
 
 echo "Waiting for MySQL to be ready..."
