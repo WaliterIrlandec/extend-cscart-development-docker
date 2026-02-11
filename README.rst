@@ -120,16 +120,27 @@ Command                   Description
 ``make sphinx-indexer``   Run Sphinx indexer with ``--all --rotate``
 ========================  =====================================================
 
-Other
-~~~~~
+Logs
+~~~~
 
 ========================  ===================================================
 Command                   Description
 ========================  ===================================================
-``make migrate``            Run CS-Cart migration (PHP 7.4)
-``make regenerate-ssl``     Regenerate SSL certificates for configured domains
-``make clear_cscache``      Clear CS-Cart cache (``app/www/var/cache/``)
+``make php_logs``           Show last 50 lines of PHP container logs
+``make nginx_logs``         Show last 30 lines of Nginx container logs
 ========================  ===================================================
+
+Other
+~~~~~
+
+================================  ===================================================
+Command                           Description
+================================  ===================================================
+``make migrate``                    Run CS-Cart migration (PHP 7.4)
+``make generate_logs_table``        Create cscart_logs table if missing
+``make regenerate-ssl``             Regenerate SSL certificates for configured domains
+``make clear_cscache``              Clear CS-Cart cache (``app/www/var/cache/``)
+================================  ===================================================
 
 
 .env Config

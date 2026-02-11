@@ -93,4 +93,6 @@
 1.2.5
   -[+] up nginx fastcgi_buffer value
   -[+] empty app/log/
-  
+
+1.2.6
+  -[+] make php_logs, make nginx_logs

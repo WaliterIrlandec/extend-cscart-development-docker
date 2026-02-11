@@ -120,5 +120,13 @@ generate_logs_table:
 install:
 	./config/scripts/install
 
+php_logs:
+	@echo "\033[1;36m=== PHP $(CONTAINER_PREFIX)-php7.4 logs ===\033[0m"
+	@docker logs $(CONTAINER_PREFIX)-php7.4 --tail 50 2>&1
+
+nginx_logs:
+	@echo "\033[1;32m=== Nginx $(CONTAINER_PREFIX)-nginx logs ===\033[0m"
+	@docker logs $(CONTAINER_PREFIX)-nginx --tail 30 2>&1
+
 clear_cscache:
 	sudo rm -rf ./app/www/var/cache/*
