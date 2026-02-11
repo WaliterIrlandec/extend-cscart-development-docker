@@ -2,6 +2,18 @@ CS-Cart Docker Environment
 ==========================
 
 
+Prerequisites
+-------------
+
+Required (for installation)::
+
+    sudo apt install docker.io docker-compose make pv
+
+Optional (for database backups)::
+
+    sudo apt install gzip unzip zstd curl openssh-client
+
+
 Quick Start
 -----------
 

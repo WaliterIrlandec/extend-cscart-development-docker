@@ -47,7 +47,7 @@ docker-compose down 2>/dev/null || true
 make run;
 
 echo "Waiting for MySQL to be ready..."
-until mysql -u root -p${MYSQL_ROOT_PASSWORD:-root} -h ${CONTAINER_PREFIX}-mysql -e "SELECT 1" 2>/dev/null; do
+until docker exec ${CONTAINER_PREFIX}-mysql mysql -u root -p${MYSQL_ROOT_PASSWORD:-root} -e "SELECT 1" 2>/dev/null; do
   sleep 2
 done
 echo "MySQL is ready"
