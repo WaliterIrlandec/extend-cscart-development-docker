@@ -110,7 +110,7 @@ migrate:
 # init
 init:
 # create db
-	./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_HOST) --db_name $(MYSQL_DB) --not_cscart $(NOT_CSCART) --additional_check Y 2>/dev/null
+	./config/scripts/mysql_restore --root_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_HOST) --db_name $(MYSQL_DB) --not_cscart $(NOT_CSCART) --additional_check Y
 # add local_conf, ssl
 	./config/scripts/init_scripts --db_pass ${MYSQL_ROOT_PASSWORD} --remote_host $(MYSQL_HOST) --db_name $(MYSQL_DB) --domain_list $(DOMAIN_LIST) --container_prefix $(CONTAINER_PREFIX) --not_cscart $(NOT_CSCART)
 
