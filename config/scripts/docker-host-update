@@ -38,16 +38,27 @@ aliasArr["${CONTAINER_PREFIX}-sphinx"]="${CONTAINER_PREFIX}-sphinx.local"
 docker ps -a --format "{{.Names}}" \
 | while read -r MACHINE; do
 
-	MACHINE_IP="$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${MACHINE} 2>/dev/null)"
-
 	if [[ ${aliasArr[$MACHINE]} ]]
 	then
+		# wait for container to get IP (up to 10 seconds)
+		MACHINE_IP=""
+		for i in $(seq 1 10); do
+			MACHINE_IP="$(docker inspect --format='{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${MACHINE} 2>/dev/null)"
+			[[ -n $MACHINE_IP ]] && break
+			sleep 1
+		done
+
+		if [[ -z $MACHINE_IP ]]; then
+			echo "WARNING: ${MACHINE} has no IP, skipping"
+			continue
+		fi
+
 		DOMAIN_NAME=$(echo ${aliasArr[$MACHINE]} | tr "," "\n")
 
     for addr in $DOMAIN_NAME
     do
 			echo "add ${MACHINE_IP}	${addr}"
-			[[ -n $MACHINE_IP ]] && sudo /bin/bash -c "echo \"${MACHINE_IP}	${addr}\" >> /etc/hosts"
+			sudo /bin/bash -c "echo \"${MACHINE_IP}	${addr}\" >> /etc/hosts"
 			export no_proxy=$no_proxy,$MACHINE_IP
     done
 	fi
