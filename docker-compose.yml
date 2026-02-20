@@ -26,8 +26,10 @@ services:
       - "9306:9306"
     depends_on:
       # - php7.3
-      - php7.4
+      # - php7.4
       # - php8.0
+      # - php8.4
+      - php8.2
 
   php7.3:
     build:
@@ -65,6 +67,32 @@ services:
     volumes:
       - ./app:/app
       - ./config/php8.0/php-ini-overrides.ini:/usr/local/etc/php/conf.d/00-php.ini
+      - ./bin/sendmail:/usr/local/bin/sendmail
+    environment:
+        PHP_IDE_CONFIG: serverName=localhost
+
+  php8.2:
+    build:
+      context: ./config/php8.2
+      dockerfile: Dockerfile
+    container_name: ${CONTAINER_PREFIX}-php8.2
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - ./config/php8.2/php-ini-overrides.ini:/usr/local/etc/php/conf.d/00-php.ini
+      - ./bin/sendmail:/usr/local/bin/sendmail
+    environment:
+        PHP_IDE_CONFIG: serverName=localhost
+
+  php8.4:
+    build:
+      context: ./config/php8.4
+      dockerfile: Dockerfile
+    container_name: ${CONTAINER_PREFIX}-php8.4
+    working_dir: /app
+    volumes:
+      - ./app:/app
+      - ./config/php8.4/php-ini-overrides.ini:/usr/local/etc/php/conf.d/00-php.ini
       - ./bin/sendmail:/usr/local/bin/sendmail
     environment:
         PHP_IDE_CONFIG: serverName=localhost
