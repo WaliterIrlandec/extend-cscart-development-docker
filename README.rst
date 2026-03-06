@@ -7,7 +7,7 @@ Prerequisites
 
 Required (for installation)::
 
-    sudo apt install docker.io docker-compose make pv
+    sudo apt install docker.io docker-compose-v2 make pv
 
 Optional (for database backups)::
 

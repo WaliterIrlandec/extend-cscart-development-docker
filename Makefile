@@ -42,12 +42,12 @@ PMA_SERVICE =
 endif
 
 run:
-	docker-compose up -d --build nginx mysql php8.2 $(PMA_SERVICE)
+	docker compose up -d --build nginx mysql php8.2 $(PMA_SERVICE)
 	./config/scripts/docker-host-remove --domain_list $(DOMAIN_LIST) --container_prefix $(CONTAINER_PREFIX)
 	./config/scripts/docker-host-update --domain_list $(DOMAIN_LIST) --container_prefix $(CONTAINER_PREFIX) --phpmyadmin $(PHPMYADMIN)
 
 stop:
-	docker-compose down
+	docker compose down
 	./config/scripts/docker-host-remove --domain_list $(DOMAIN_LIST) --container_prefix $(CONTAINER_PREFIX)
 
 # mysql connect

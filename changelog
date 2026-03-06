@@ -108,3 +108,6 @@
 
 1.3.2
   -[!] default nginx conf change to php8.2
+
+1.3.3
+  -[+] move to docker compose v2
