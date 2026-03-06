@@ -109,7 +109,7 @@ Command           Description
 ================  ===================================================================
 ``make nginx``    Open shell in Nginx container
 ``make bash``     Alias for ``make nginx``
-``make php``      Open bash in PHP 7.4 container (default)
+``make php``      Open bash in PHP 8.2 container (default)
 ``make cli-7.3``  Open bash in PHP 7.3 container
 ``make cli-7.4``  Open bash in PHP 7.4 container
 ``make cli-8.0``  Open bash in PHP 8.0 container
@@ -141,7 +141,7 @@ Other
 ================================  ===================================================
 Command                           Description
 ================================  ===================================================
-``make migrate``                    Run CS-Cart migration (PHP 7.4)
+``make migrate``                    Run CS-Cart migration (PHP 8.2)
 ``make generate_logs_table``        Create cscart_logs table if missing
 ``make regenerate-ssl``             Regenerate SSL certificates for configured domains
 ``make clear_cscache``              Clear CS-Cart cache (``app/www/var/cache/``)
