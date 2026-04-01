@@ -90,7 +90,11 @@ regenerate-ssl:
 	./config/scripts/reinit_ssl --domain_list $(DOMAIN_LIST) --container_prefix $(CONTAINER_PREFIX)
 
 update-database-from-live:
+ifdef skip_download
+	./config/scripts/update_database_from_live -zr
+else
 	./config/scripts/update_database_from_live -dzr
+endif
 
 cli-7.3:
 	docker exec -it $(CONTAINER_PREFIX)-php7.3 bash
@@ -136,3 +140,6 @@ nginx_logs:
 
 clear_cscache:
 	sudo rm -rf ./app/www/var/cache/*
+
+info:
+	@cat COMMANDS.rst

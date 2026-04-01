@@ -76,7 +76,83 @@ log "$CYAN" "[DOWNLOAD]"
 
 REMOVE_BCK_TYPE="${REMOVE_BCK_TYPE:-curl}"
 
-if [ -z "$REMOVE_BCK_URL" ] || [ -z "$REMOVE_BCK_FILES" ]; then
+if [ "$REMOVE_BCK_TYPE" = "ssh_dump" ]; then
+	if [ -z "$REMOVE_BCK_URL" ] || [ -z "$REMOVE_BCK_SSH_DB" ] || [ -z "$REMOVE_BCK_SSH_DB_USER" ] || [ -z "$REMOVE_BCK_SSH_DB_PASS" ]; then
+		log "$RED" "REMOVE_BCK_URL, REMOVE_BCK_SSH_DB, REMOVE_BCK_SSH_DB_USER, REMOVE_BCK_SSH_DB_PASS are required for ssh_dump mode. Skip download…"
+	else
+		mkdir -p "$folder"
+		DUMP_DATE=$(date +%Y%m%d_%H%M%S)
+		DUMP_FILE="$folder/${REMOVE_BCK_SSH_DB}.${DUMP_DATE}.sql.gz"
+
+		# Escape password for safe passing through SSH
+		ESCAPED_PASS=$(printf '%q' "$REMOVE_BCK_SSH_DB_PASS")
+
+		# Resolve table name (expand wildcards via SHOW TABLES LIKE on remote)
+		resolve_tables() {
+			local pattern="$1"
+			if [[ "$pattern" == *"*"* ]]; then
+				local like_pattern="${pattern//\*/%}"
+				ssh "$REMOVE_BCK_URL" "mysql -u '${REMOVE_BCK_SSH_DB_USER}' -p${ESCAPED_PASS} -N -e \"SHOW TABLES LIKE '${like_pattern}'\" ${REMOVE_BCK_SSH_DB}" 2>/dev/null
+			else
+				echo "$pattern"
+			fi
+		}
+
+		# Build --ignore-table options
+		IGNORE_OPTS=""
+		if [ -n "$REMOVE_BCK_IGNORE_TABLES" ]; then
+			IFS=',' read -r -a IGNORE_ARR <<< "$REMOVE_BCK_IGNORE_TABLES"
+			for t in "${IGNORE_ARR[@]}"; do
+				t=$(echo "$t" | xargs)
+				while IFS= read -r resolved; do
+					[ -n "$resolved" ] && IGNORE_OPTS="$IGNORE_OPTS --ignore-table=${REMOVE_BCK_SSH_DB}.${resolved}"
+				done <<< "$(resolve_tables "$t")"
+			done
+		fi
+
+		# Also ignore structure-only tables from main dump
+		STRUCTURE_OPTS=""
+		if [ -n "$REMOVE_BCK_STRUCTURE_ONLY" ]; then
+			IFS=',' read -r -a STRUCT_ARR <<< "$REMOVE_BCK_STRUCTURE_ONLY"
+			for t in "${STRUCT_ARR[@]}"; do
+				t=$(echo "$t" | xargs)
+				while IFS= read -r resolved; do
+					if [ -n "$resolved" ]; then
+						IGNORE_OPTS="$IGNORE_OPTS --ignore-table=${REMOVE_BCK_SSH_DB}.${resolved}"
+						STRUCTURE_OPTS="$STRUCTURE_OPTS ${resolved}"
+					fi
+				done <<< "$(resolve_tables "$t")"
+			done
+		fi
+
+		# Main dump (data + structure, excluding ignored and structure-only tables)
+		log "$BLUE" "Running mysqldump (data) on remote server via SSH..."
+		ssh "$REMOVE_BCK_URL" "mysqldump -u '${REMOVE_BCK_SSH_DB_USER}' -p${ESCAPED_PASS} ${REMOVE_BCK_SSH_DB} ${IGNORE_OPTS} | gzip" | pv > "$DUMP_FILE"
+
+		if [ $? -eq 0 ] && [ -s "$DUMP_FILE" ]; then
+			log "$GREEN" "Dump saved: $DUMP_FILE ($(du -h "$DUMP_FILE" | cut -f1))"
+		else
+			log "$RED" "ssh_dump (data) failed"
+			rm -f "$DUMP_FILE"
+			exit 1
+		fi
+
+		# Structure-only dump (if set)
+		if [ -n "$STRUCTURE_OPTS" ]; then
+			STRUCT_FILE="$folder/${REMOVE_BCK_SSH_DB}.${DUMP_DATE}.structure.sql.gz"
+			log "$BLUE" "Running mysqldump (structure only) on remote server via SSH..."
+			ssh "$REMOVE_BCK_URL" "mysqldump -u '${REMOVE_BCK_SSH_DB_USER}' -p${ESCAPED_PASS} --no-data ${REMOVE_BCK_SSH_DB} ${STRUCTURE_OPTS} | gzip" | pv > "$STRUCT_FILE"
+
+			if [ $? -eq 0 ] && [ -s "$STRUCT_FILE" ]; then
+				log "$GREEN" "Structure dump saved: $STRUCT_FILE ($(du -h "$STRUCT_FILE" | cut -f1))"
+			else
+				log "$RED" "ssh_dump (structure) failed"
+				rm -f "$STRUCT_FILE"
+				exit 1
+			fi
+		fi
+	fi
+elif [ -z "$REMOVE_BCK_URL" ] || [ -z "$REMOVE_BCK_FILES" ]; then
 	log "$RED" "REMOVE_BCK_URL, REMOVE_BCK_FILES are required. Skip download…"
 elif [ "$REMOVE_BCK_TYPE" = "curl" ] && { [ -z "$REMOVE_BCK_USER" ] || [ -z "$REMOVE_BCK_PWD" ]; }; then
 	log "$RED" "REMOVE_BCK_USER, REMOVE_BCK_PWD are required for curl mode. Skip download…"
