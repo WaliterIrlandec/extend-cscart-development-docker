@@ -92,6 +92,7 @@ Optional (with defaults)
 
 ::
 
+    # PHP_VERSION=8.2
     # MYSQL_DB=${CONTAINER_PREFIX}
     # MYSQL_USER=root
     # HTTP_REMOTE_PORT=8080

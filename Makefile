@@ -20,6 +20,7 @@ MYSQL_REMOTE_PORT ?= 33306
 PHPMYADMIN_PORT ?= 8081
 PHPMYADMIN ?= N
 NOT_CSCART ?= N
+PHP_VERSION ?= 8.2
 export CONTAINER_PREFIX
 export DOMAIN_LIST
 export MYSQL_DB
@@ -42,7 +43,7 @@ PMA_SERVICE =
 endif
 
 run:
-	docker compose up -d --build nginx mysql php8.2 $(PMA_SERVICE)
+	docker compose up -d --build nginx mysql php$(PHP_VERSION) $(PMA_SERVICE)
 	./config/scripts/docker-host-remove --domain_list $(DOMAIN_LIST) --container_prefix $(CONTAINER_PREFIX)
 	./config/scripts/docker-host-update --domain_list $(DOMAIN_LIST) --container_prefix $(CONTAINER_PREFIX) --phpmyadmin $(PHPMYADMIN)
 
@@ -106,7 +107,7 @@ cli-8.0:
 	docker exec -it $(CONTAINER_PREFIX)-php8.0 bash
 
 cli-8.2:
-	docker exec -it $(CONTAINER_PREFIX)-php8.2 bash
+	docker exec -it $(CONTAINER_PREFIX)-php$(PHP_VERSION) bash
 
 cli-8.4:
 	docker exec -it $(CONTAINER_PREFIX)-php8.4 bash
@@ -115,7 +116,7 @@ php:
 	make cli-8.2
 
 migrate:
-	docker exec -it $(CONTAINER_PREFIX)-php8.2 php ./www/job_run_migration.php
+	docker exec -it $(CONTAINER_PREFIX)-php$(PHP_VERSION) php ./www/job_run_migration.php
 
 # init
 init:
@@ -131,8 +132,8 @@ install:
 	./config/scripts/install
 
 php_logs:
-	@echo "\033[1;36m=== PHP $(CONTAINER_PREFIX)-php8.2 logs ===\033[0m"
-	@docker logs $(CONTAINER_PREFIX)-php8.2 --tail 50 2>&1
+	@echo "\033[1;36m=== PHP $(CONTAINER_PREFIX)-php$(PHP_VERSION) logs ===\033[0m"
+	@docker logs $(CONTAINER_PREFIX)-php$(PHP_VERSION) --tail 50 2>&1
 
 nginx_logs:
 	@echo "\033[1;32m=== Nginx $(CONTAINER_PREFIX)-nginx logs ===\033[0m"

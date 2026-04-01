@@ -118,3 +118,7 @@
 1.3.5
   -[+] a new type REMOVE_BCK_TYPE ssh_dump
   -[+] make info
+
+1.3.6
+  -[-] remove nginx php version mapping
+  -[+] add .env PHP_VERSION setting (8.2 by default)
