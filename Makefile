@@ -30,6 +30,7 @@ export MYSQL_ROOT_PASSWORD
 export MYSQL_REMOTE_PORT
 export PHPMYADMIN_PORT
 export NOT_CSCART
+export PHP_VERSION
 
 # Derived container names
 MYSQL_HOST = $(CONTAINER_PREFIX)-mysql
