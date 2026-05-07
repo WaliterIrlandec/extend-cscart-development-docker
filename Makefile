@@ -91,6 +91,9 @@ sphinx-indexer:
 regenerate-ssl:
 	./config/scripts/reinit_ssl --domain_list $(DOMAIN_LIST) --container_prefix $(CONTAINER_PREFIX)
 
+push_ssl_cert_to_browsers:
+	./config/scripts/push_ssl_cert_to_browsers
+
 update-database-from-live:
 ifdef skip_download
 	./config/scripts/update_database_from_live -zr

@@ -1,0 +1,96 @@
+#!/bin/sh
+
+CA_CERT="./app/ssl/mkcert/rootCA.pem"
+CA_NAME="mkcert-local-ca"
+
+if [ ! -f "$CA_CERT" ]; then
+    echo "CA cert not found at $CA_CERT. Run make regenerate-ssl first."
+    exit 1
+fi
+
+OS=$(uname -s)
+
+case "$OS" in
+    Linux)
+        # system store
+        echo "Adding to system store..."
+        sudo cp "$CA_CERT" /usr/local/share/ca-certificates/${CA_NAME}.crt
+        sudo update-ca-certificates
+
+        # certutil required for Chrome and Firefox on Linux
+        if ! command -v certutil >/dev/null 2>&1; then
+            echo "ERROR: certutil not found. Install libnss3-tools: sudo apt install libnss3-tools"
+            exit 1
+        fi
+
+        # Chrome
+        if command -v google-chrome >/dev/null 2>&1 || command -v chromium >/dev/null 2>&1 || command -v chromium-browser >/dev/null 2>&1; then
+            echo "Adding to Chrome NSS store..."
+            mkdir -p "$HOME/.pki/nssdb"
+            certutil -d "sql:$HOME/.pki/nssdb" -A -t "C,," -n "$CA_NAME" -i "$CA_CERT"
+        else
+            echo "Chrome not found, skipping."
+        fi
+
+        # Firefox
+        if command -v firefox >/dev/null 2>&1; then
+            FF_BASE=""
+
+            if [ -d "$HOME/.mozilla/firefox" ]; then
+                FF_BASE="$HOME/.mozilla/firefox"
+            elif [ -d "$HOME/snap/firefox/common/.mozilla/firefox" ]; then
+                FF_BASE="$HOME/snap/firefox/common/.mozilla/firefox"
+            fi
+
+            if [ -z "$FF_BASE" ]; then
+                echo "ERROR: Firefox found but profiles directory not found"
+            else
+                echo "Adding to Firefox profiles ($FF_BASE)..."
+                FOUND=0
+                for profile in "$FF_BASE/"*.default*/; do
+                    if [ -d "$profile" ]; then
+                        certutil -d "sql:$profile" -A -t "C,," -n "$CA_NAME" -i "$CA_CERT" >/dev/null 2>&1
+                        if [ $? -eq 0 ]; then
+                            echo "OK: $profile"
+                        else
+                            echo "ERROR: failed for $profile"
+                        fi
+                        FOUND=1
+                    fi
+                done
+                if [ "$FOUND" -eq 0 ]; then
+                    echo "ERROR: no Firefox profiles found in $FF_BASE"
+                fi
+            fi
+        else
+            echo "SKIP: Firefox not found"
+        fi
+        ;;
+
+    Darwin)
+        # macOS system keychain (Chrome uses it)
+        echo "Adding to macOS system keychain..."
+        sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain "$CA_CERT"
+
+        # Firefox
+        if [ -d "$HOME/Library/Application Support/Firefox/Profiles" ]; then
+            echo "Adding to Firefox profiles..."
+            if ! command -v certutil >/dev/null 2>&1; then
+                echo "certutil not found. Install nss: brew install nss"
+                exit 1
+            fi
+            for profile in "$HOME/Library/Application Support/Firefox/Profiles/"*/; do
+                [ -d "$profile" ] && certutil -d "sql:$profile" -A -t "C,," -n "$CA_NAME" -i "$CA_CERT"
+            done
+        else
+            echo "Firefox not found, skipping."
+        fi
+        ;;
+
+    *)
+        echo "Unsupported OS: $OS"
+        exit 1
+        ;;
+esac
+
+echo "Done. Restart browsers to apply."

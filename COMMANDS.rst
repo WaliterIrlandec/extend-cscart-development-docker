@@ -79,6 +79,7 @@ Command                           Description
 ``make migrate``                    Run CS-Cart migration (PHP 8.2)
 ``make generate_logs_table``        Create cscart_logs table if missing
 ``make regenerate-ssl``             Regenerate SSL certificates for configured domains
+``make push_ssl_cert_to_browsers``  Add project SSL certificate to Chrome and Firefox. Requires ``certutil``
 ``make clear_cscache``              Clear CS-Cart cache (``app/www/var/cache/``)
 ``make info``                       Show this commands reference
 ================================  ===================================================
