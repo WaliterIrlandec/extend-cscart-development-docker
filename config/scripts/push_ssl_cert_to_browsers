@@ -1,7 +1,7 @@
 #!/bin/sh
 
 CA_CERT="./app/ssl/mkcert/rootCA.pem"
-CA_NAME="mkcert-local-ca"
+CA_NAME="mkcert-local-ca__${CONTAINER_PREFIX}"
 
 if [ ! -f "$CA_CERT" ]; then
     echo "CA cert not found at $CA_CERT. Run make regenerate-ssl first."
@@ -27,6 +27,7 @@ case "$OS" in
         if command -v google-chrome >/dev/null 2>&1 || command -v chromium >/dev/null 2>&1 || command -v chromium-browser >/dev/null 2>&1; then
             echo "Adding to Chrome NSS store..."
             mkdir -p "$HOME/.pki/nssdb"
+            certutil -d "sql:$HOME/.pki/nssdb" -D -n "$CA_NAME" >/dev/null 2>&1
             certutil -d "sql:$HOME/.pki/nssdb" -A -t "C,," -n "$CA_NAME" -i "$CA_CERT"
         else
             echo "Chrome not found, skipping."
@@ -49,6 +50,7 @@ case "$OS" in
                 FOUND=0
                 for profile in "$FF_BASE/"*.default*/; do
                     if [ -d "$profile" ]; then
+                        certutil -d "sql:$profile" -D -n "$CA_NAME" >/dev/null 2>&1
                         certutil -d "sql:$profile" -A -t "C,," -n "$CA_NAME" -i "$CA_CERT" >/dev/null 2>&1
                         if [ $? -eq 0 ]; then
                             echo "OK: $profile"
@@ -80,7 +82,10 @@ case "$OS" in
                 exit 1
             fi
             for profile in "$HOME/Library/Application Support/Firefox/Profiles/"*/; do
-                [ -d "$profile" ] && certutil -d "sql:$profile" -A -t "C,," -n "$CA_NAME" -i "$CA_CERT"
+                if [ -d "$profile" ]; then
+                    certutil -d "sql:$profile" -D -n "$CA_NAME" >/dev/null 2>&1
+                    certutil -d "sql:$profile" -A -t "C,," -n "$CA_NAME" -i "$CA_CERT"
+                fi
             done
         else
             echo "Firefox not found, skipping."

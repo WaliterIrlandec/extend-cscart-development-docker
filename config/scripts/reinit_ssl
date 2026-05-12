@@ -16,7 +16,7 @@ echo "re-generating ssl cert"
 
 DOMAIN_NAMES=$(echo "$DOMAIN_LIST" | tr ',' ' ')
 
-mkdir -p ./app/ssl/mkcert
+docker exec ${NGINX_HOST} mkdir -p /app/ssl/mkcert
 
 # install mkcert binary if not present
 docker exec ${NGINX_HOST} /bin/sh -c "
