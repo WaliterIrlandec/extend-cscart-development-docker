@@ -32,6 +32,9 @@ docker exec ${NGINX_HOST} /bin/sh -c "CAROOT=/app/ssl/mkcert mkcert -install"
 # generate cert for all domains
 docker exec ${NGINX_HOST} /bin/sh -c "CAROOT=/app/ssl/mkcert mkcert -key-file /app/ssl/ssl.key -cert-file /app/ssl/ssl.crt ${DOMAIN_NAMES} localhost 127.0.0.1"
 
+# reload nginx so it picks up the new cert
+docker exec ${NGINX_HOST} nginx -s reload
+
 echo ""
 echo "SSL cert generated."
 echo "To trust it in browsers run: make push_ssl_cert_to_browsers"

@@ -132,3 +132,5 @@
 1.3.9
   [!] trust cert BF
 
+1.3.10
+  [+] auto reload nginx after regenerate-ssl
