@@ -1,6 +1,7 @@
 #!make
 
 # run|default -- start docker, add domains
+# build -- rebuild php image
 # stop -- stop docker, remove domains
 # mysql -- connect to mysql cli
 # nginx -- connect to nginx cli
@@ -44,9 +45,12 @@ PMA_SERVICE =
 endif
 
 run:
-	docker compose up -d --build nginx mysql php$(PHP_VERSION) $(PMA_SERVICE)
+	docker compose up -d nginx mysql php$(PHP_VERSION) $(PMA_SERVICE)
 	./config/scripts/docker-host-remove --domain_list $(DOMAIN_LIST) --container_prefix $(CONTAINER_PREFIX)
 	./config/scripts/docker-host-update --domain_list $(DOMAIN_LIST) --container_prefix $(CONTAINER_PREFIX) --phpmyadmin $(PHPMYADMIN)
+
+build:
+	docker compose build php$(PHP_VERSION)
 
 stop:
 	docker compose down

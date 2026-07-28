@@ -17,7 +17,8 @@ Docker Lifecycle
 ================  ===================================================================
 Command           Description
 ================  ===================================================================
-``make run``      Build and start containers, update /etc/hosts
+``make run``      Start containers, update /etc/hosts
+``make build``    Rebuild php image (needed after changing config/php<version>/Dockerfile)
 ``make stop``     Stop containers, clean up /etc/hosts
 ================  ===================================================================
 
