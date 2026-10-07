@@ -14,17 +14,25 @@ case "$OS" in
     Linux)
         # system store
         echo "Adding to system store..."
-        sudo cp "$CA_CERT" /usr/local/share/ca-certificates/${CA_NAME}.crt
-        sudo update-ca-certificates
+        if command -v update-ca-certificates >/dev/null 2>&1; then
+            sudo cp "$CA_CERT" /usr/local/share/ca-certificates/${CA_NAME}.crt
+            sudo update-ca-certificates
+        elif command -v update-ca-trust >/dev/null 2>&1; then
+            sudo cp "$CA_CERT" /etc/ca-certificates/trust-source/anchors/${CA_NAME}.crt
+            sudo update-ca-trust
+        else
+            echo "ERROR: neither update-ca-certificates nor update-ca-trust found"
+            exit 1
+        fi
 
         # certutil required for Chrome and Firefox on Linux
         if ! command -v certutil >/dev/null 2>&1; then
-            echo "ERROR: certutil not found. Install libnss3-tools: sudo apt install libnss3-tools"
+            echo "ERROR: certutil not found. Install libnss3-tools (sudo apt install libnss3-tools) or nss (sudo pacman -S nss)"
             exit 1
         fi
 
         # Chrome
-        if command -v google-chrome >/dev/null 2>&1 || command -v chromium >/dev/null 2>&1 || command -v chromium-browser >/dev/null 2>&1; then
+        if command -v google-chrome >/dev/null 2>&1 || command -v google-chrome-stable >/dev/null 2>&1 || command -v chromium >/dev/null 2>&1 || command -v chromium-browser >/dev/null 2>&1; then
             echo "Adding to Chrome NSS store..."
             mkdir -p "$HOME/.pki/nssdb"
             certutil -d "sql:$HOME/.pki/nssdb" -D -n "$CA_NAME" >/dev/null 2>&1
@@ -39,6 +47,8 @@ case "$OS" in
 
             if [ -d "$HOME/.mozilla/firefox" ]; then
                 FF_BASE="$HOME/.mozilla/firefox"
+            elif [ -d "$HOME/.config/mozilla/firefox" ]; then
+                FF_BASE="$HOME/.config/mozilla/firefox"
             elif [ -d "$HOME/snap/firefox/common/.mozilla/firefox" ]; then
                 FF_BASE="$HOME/snap/firefox/common/.mozilla/firefox"
             fi

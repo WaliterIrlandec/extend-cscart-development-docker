@@ -138,3 +138,7 @@
 1.3.11
   [*] make run without --build, start does not require network
   [+] make build to rebuild php image
+
+1.3.12
+  [+] SSL certificate commands compatible with Arch
+
