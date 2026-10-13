@@ -142,3 +142,6 @@
 1.3.12
   [+] SSL certificate commands compatible with Arch
 
+1.3.13
+  [!] changed sourcelist for php 8.0
+

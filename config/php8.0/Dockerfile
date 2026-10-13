@@ -18,6 +18,7 @@ RUN set -xe; \
         | tar xvz -C "/usr/src/php/ext/imagick" --strip-components=1;
 
 RUN set -xe; \
+    sed -i 's|deb.debian.org|archive.debian.org|g' /etc/apt/sources.list; \
     apt update; \
     apt install --yes \
         mariadb-client \
