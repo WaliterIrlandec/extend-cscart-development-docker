@@ -22,3 +22,5 @@ memory/
 
 /bck/*
 !/bck/.gitkeep
+
+config/scripts/local/
